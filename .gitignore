@@ -1,0 +1,19 @@
+# Personal account sets — never published.
+presets/local.json
+
+# Project-internal notes: account provenance, unverified follower counts.
+HANDOFF.md
+
+# Working folders. Kept in the tree, contents ignored.
+assets/*
+!assets/.gitkeep
+exports/*
+!exports/.gitkeep
+
+# Font sources used to regenerate css/fonts.css (the generated file IS committed).
+fonts/*
+!fonts/OFL.txt
+
+node_modules/
+.DS_Store
+Thumbs.db

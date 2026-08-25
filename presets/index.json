@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "_comment": "Preset files loaded automatically at start-up, relative to this folder. presets/local.json is probed as well and is gitignored, so personal account sets stay off GitHub.",
+  "presets": [
+    "example.json"
+  ]
+}

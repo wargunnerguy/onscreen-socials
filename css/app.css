@@ -1,0 +1,380 @@
+/* Onscreen Socials — social profile mockups for video
+   iPhone 17 — 1206 × 2622 px display, Dynamic Island, 22px bezel.
+
+   Everything inside .screen is real DOM at real pixel size. #stage is CSS-scaled
+   purely for viewing; offsetWidth/offsetHeight stay unscaled so exports come out
+   at native resolution.
+
+   This whole file is injected verbatim into the SVG <foreignObject> at export
+   time (see js/export.js). Two consequences worth knowing before editing:
+     · no url() may point at the network — it will silently fail to load
+     · avoid mix-blend-mode and filter tricks that Chromium declines to
+       rasterise inside foreignObject
+*/
+
+:root{
+  --scr-w: 1206px;
+  --scr-h: 2622px;
+  --scr-r: 168px;
+  --bez: 22px;
+  --dim: 0.25;
+
+  --ui-bg: #1b1b21;
+  --ui-line: #2c2c34;
+  --ui-fg: #c8c8d0;
+  --ui-input: #2a2a32;
+  --ui-input-line: #3a3a44;
+}
+
+*{box-sizing:border-box; -webkit-font-smoothing:antialiased;}
+html,body{margin:0; padding:0;}
+body{
+  font-family:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+  background:#101014;
+}
+
+/* ═════════════════════════ control bar ═════════════════════════ */
+
+#bar{
+  position:fixed; top:0; left:0; right:0; z-index:1000;
+  display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+  padding:9px 16px; background:var(--ui-bg); border-bottom:1px solid var(--ui-line);
+  color:var(--ui-fg); font-size:13px;
+}
+.clean #bar{display:none;}
+
+#bar strong{
+  color:#fff; font-weight:600; letter-spacing:.06em;
+  text-transform:uppercase; font-size:11px;
+}
+#bar label{display:flex; align-items:center; gap:6px; cursor:pointer; white-space:nowrap;}
+#bar select{
+  background:var(--ui-input); color:#e6e6ec; border:1px solid var(--ui-input-line);
+  border-radius:5px; padding:3px 6px; font-size:12px; font-family:inherit;
+}
+#bar button{
+  background:#2f6d4f; color:#eafff2; border:1px solid #3d8a64; border-radius:6px;
+  padding:5px 11px; font-size:12px; cursor:pointer; font-family:inherit;
+}
+#bar button:hover{background:#3d8a64;}
+#bar button.all{background:#3a3a44; border-color:#4a4a56; color:#e6e6ec;}
+#bar button.all:hover{background:#4a4a56;}
+#bar button[disabled]{opacity:.4; cursor:not-allowed;}
+#bar button[disabled]:hover{background:#2f6d4f;}
+#bar button.all[disabled]:hover{background:#3a3a44;}
+
+.grp{display:flex; align-items:center; gap:8px;}
+.sep{width:1px; height:20px; background:#33333d;}
+/* The swatches are spans, so this has to be a flex container — as plain inline
+   boxes they ignore width and height and collapse to nothing. */
+#swatches{display:flex; align-items:center; gap:6px;}
+.sw{width:22px; height:22px; border-radius:5px; border:1px solid var(--ui-input-line); cursor:pointer;}
+.sw.on{outline:2px solid #fff; outline-offset:2px;}
+input[type=range]{width:88px; accent-color:#3d8a64;}
+#saveState{color:#5fbf8a; font-size:11px; min-width:70px;}
+
+/* The less-used view toggles live in a popover so the bar holds one row. */
+.more{position:relative;}
+.more > summary{
+  list-style:none; cursor:pointer; user-select:none;
+  background:var(--ui-input); border:1px solid var(--ui-input-line);
+  border-radius:6px; padding:5px 10px; font-size:12px;
+}
+.more > summary::-webkit-details-marker{display:none;}
+.more[open] > summary{background:#3a3a44;}
+.more .panel{
+  position:absolute; right:0; top:calc(100% + 9px);
+  display:flex; flex-direction:column; gap:11px; min-width:242px;
+  background:var(--ui-bg); border:1px solid var(--ui-line); border-radius:9px;
+  padding:13px 15px; box-shadow:0 14px 36px rgba(0,0,0,.55); z-index:1001;
+}
+.more .panel hr{border:0; border-top:1px solid var(--ui-line); margin:1px 0; width:100%;}
+
+.hint{margin-left:auto; color:#70707c; font-size:12px;}
+.hint kbd{
+  background:#2a2a32; border:1px solid var(--ui-input-line); border-bottom-width:2px;
+  border-radius:4px; padding:0 5px; font-family:inherit; font-size:11px; color:#c8c8d0;
+}
+
+/* Shown when the browser cannot do the foreignObject → canvas export. */
+#notice{
+  position:fixed; z-index:1002; left:0; right:0; bottom:0;
+  background:#5a3210; color:#ffd9a8; border-top:1px solid #7a4715;
+  padding:10px 16px; font-size:13px; line-height:1.45;
+}
+#notice[hidden]{display:none;}
+.clean #notice{display:none;}
+
+/* ═════════════════════════ stage ═════════════════════════ */
+
+/* Zoom is a transform on #stage, which does not affect layout: the element keeps
+   its full 2666px box and only paints smaller. So the offset that clears the
+   toolbar has to sit on an untransformed parent, or it would shrink along with
+   everything else and slide the status bars under the bar. #stagewrap also gets
+   an explicit height from applyZoom(), otherwise the page scrolls over the
+   unscaled layout box — several screens of nothing below the phones.
+
+   --bar-h is written by app.js from the toolbar's real height, because the bar
+   wraps to two rows on a narrow window and a fixed offset would leave the
+   status bars hidden under it. */
+#stagewrap{padding:calc(var(--bar-h, 46px) + 16px) 0 40px;}
+.clean #stagewrap{padding:0;}
+
+#stage{
+  padding:0 40px;
+  display:flex; gap:70px; justify-content:center; align-items:flex-start;
+  transform-origin:top center;
+}
+
+.phone{
+  flex:0 0 auto; position:relative;
+  padding:var(--bez);
+  background:linear-gradient(150deg,#3d3d42,#0a0a0c 40%,#2a2a30);
+  border-radius:calc(var(--scr-r) + var(--bez));
+  box-shadow:0 0 0 2px #55555e inset;
+}
+.noframe .phone{padding:0; background:none; border-radius:0; box-shadow:none;}
+
+.screen{
+  width:var(--scr-w); height:var(--scr-h);
+  position:relative; overflow:hidden;
+  border-radius:var(--scr-r);
+  display:flex; flex-direction:column;
+}
+.noframe .screen{border-radius:0;}
+
+.island{
+  position:absolute; top:42px; left:50%; transform:translateX(-50%);
+  width:376px; height:112px; background:#000; border-radius:56px; z-index:70;
+}
+.noframe .island{display:none;}
+
+.statusbar{
+  height:186px; flex:0 0 auto; position:relative; z-index:65;
+  display:flex; align-items:flex-start; justify-content:space-between;
+  padding:62px 96px 0; font-size:46px; font-weight:600;
+}
+.nostatus .statusbar{display:none;}
+.nostatus .island{top:24px;}
+.sigs{display:flex; gap:14px; align-items:center;}
+.bars i{display:inline-block; width:8px; background:currentColor; border-radius:2px; margin-left:4px;}
+.batt{width:62px; height:30px; border:3px solid currentColor; border-radius:8px; position:relative;}
+.batt::after{content:""; position:absolute; left:3px; top:3px; bottom:3px; right:16px; background:currentColor; border-radius:3px;}
+.batt::before{content:""; position:absolute; right:-9px; top:9px; width:5px; height:10px; background:currentColor; border-radius:0 3px 3px 0;}
+
+[contenteditable]{outline:none;}
+[contenteditable]:focus{background:rgba(255,220,0,.22); border-radius:5px;}
+
+/* ═════════════════════════ icons ═════════════════════════
+
+   Every piece of platform chrome is an inline SVG rather than an emoji or a
+   fullwidth character. Emoji rasterise from the OS font, so the same export made
+   on Windows and on macOS would not match — which defeats the point of the tool.
+   js/icons.js expands <i data-icon="…"> into these at boot.
+
+   Stroke geometry by default, .solid for filled glyphs. Generic shapes only —
+   no platform marks, see docs/ARCHITECTURE.md. */
+
+.ic{
+  width:1em; height:1em; display:inline-block; vertical-align:-.14em;
+  fill:none; stroke:currentColor; stroke-width:1.8;
+  stroke-linecap:round; stroke-linejoin:round;
+  overflow:visible;
+}
+.ic.solid{fill:currentColor; stroke:none;}
+.ic.thin{stroke-width:1.5;}
+
+/* ═════════════════════════ media slots ═════════════════════════ */
+
+.tile{background-size:cover; background-position:center; cursor:pointer; position:relative;}
+.tile.empty::after{
+  content:"+"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  color:rgba(255,255,255,.25); font-size:70px; font-weight:200;
+}
+.clean .tile.empty::after{content:"";}
+
+.vslot{
+  position:relative; overflow:hidden; cursor:pointer; background:#0a0a0c;
+  width:100%; aspect-ratio:16/9; flex:0 0 auto;
+}
+.bleed .vslot[data-ratio]{aspect-ratio:4/5;}
+.vslot .layer{position:absolute; inset:0;}
+.vslot .fill{filter:blur(60px) brightness(.55); transform:scale(1.25); display:none;}
+.fit-blur .vslot .fill{display:block;}
+.vslot .fill img,.vslot .fill video{width:100%; height:100%; object-fit:cover;}
+.vslot .main img,.vslot .main video{width:100%; height:100%; object-fit:cover;}
+.fit-letter .vslot .main img, .fit-letter .vslot .main video,
+.fit-blur   .vslot .main img, .fit-blur   .vslot .main video{object-fit:contain;}
+.vslot .scrim{position:absolute; inset:0; z-index:74; background:#000; opacity:var(--dim); pointer-events:none;}
+.vslot .ph{
+  position:absolute; inset:0; display:flex; flex-direction:column; gap:12px;
+  align-items:center; justify-content:center; color:rgba(255,255,255,.3);
+  background:repeating-linear-gradient(45deg,#1c1c22 0 40px,#191920 40px 80px);
+  font-size:28px; letter-spacing:.04em; text-align:center;
+}
+.vslot .ph b{font-size:56px; font-weight:300;}
+.vslot.loaded .ph{display:none;}
+.clean .vslot .ph{background:#141419; color:transparent;}
+
+.guide{position:absolute; inset:0; z-index:80; display:none; border:4px dashed rgba(0,255,190,.9);}
+.guides .guide{display:block;}
+.guide span{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  background:rgba(0,0,0,.85); color:#00ffbe; padding:12px 18px; border-radius:10px;
+  font-family:Consolas,monospace; font-size:30px; white-space:nowrap; line-height:1.4; text-align:center;
+}
+
+/* Optional "this is a prop" overlay. Off by default. Unlike the placeholder
+   chrome it is deliberately NOT suppressed in clean view — it has to survive
+   into the exported PNG or it would be pointless. */
+.watermark .screen::after{
+  content:"PROP — NOT A REAL PROFILE";
+  position:absolute; inset:0; z-index:90; pointer-events:none;
+  display:flex; align-items:center; justify-content:center;
+  transform:rotate(-24deg);
+  font-size:78px; font-weight:700; letter-spacing:.05em; text-align:center;
+  color:rgba(150,150,158,.42);
+}
+
+/* ═════════════════════════ INSTAGRAM ═════════════════════════ */
+
+.ig{background:#000; color:#fff; font-size:42px;}
+.ig .topbar{display:flex; align-items:center; justify-content:space-between; padding:6px 50px 34px;}
+.ig .topbar .handle{font-size:56px; font-weight:700; display:flex; align-items:center; gap:16px;}
+.ig .topbar .icons{display:flex; gap:40px; font-size:52px;}
+.ig .head{display:flex; align-items:center; padding:0 50px; gap:60px;}
+.ig .avatar{
+  width:250px; height:250px; border-radius:50%; flex:0 0 auto; border:5px solid #262626;
+  background:linear-gradient(140deg,#4a4a55,#26262e); background-size:cover; background-position:center;
+}
+.ig .stats{display:flex; flex:1; justify-content:space-around; text-align:center;}
+.ig .stats b{display:block; font-size:56px; font-weight:700; line-height:1.2;}
+.ig .stats span{font-size:38px; color:#c2c2c2;}
+.ig .bio{padding:34px 50px 0; line-height:1.4; font-size:41px;}
+.ig .bio .name{font-weight:700;}
+.ig .bio .cat{color:#a8a8a8;}
+.ig .bio .link{color:#4a9ae0; font-weight:600;}
+.ig .btns{display:flex; gap:18px; padding:38px 50px 44px;}
+.ig .btns div{flex:1; text-align:center; padding:26px 0; border-radius:16px; background:#0095F6; font-weight:600; font-size:40px;}
+.ig .btns div.alt{background:#262626;}
+.ig .btns div.sq{flex:0 0 100px; display:flex; align-items:center; justify-content:center;}
+.ig .prow{display:flex; align-items:center; gap:24px; padding:30px 50px 26px; border-top:2px solid #262626;}
+.ig .pav{width:96px; height:96px; border-radius:50%; background:linear-gradient(140deg,#4a4a55,#26262e); background-size:cover; background-position:center;}
+.ig .prow b{font-size:42px;}
+.ig .prow small{display:block; color:#a8a8a8; font-size:34px;}
+.ig .acts{display:flex; gap:40px; padding:26px 50px 0; font-size:56px; align-items:center;}
+.ig .acts .r{margin-left:auto;}
+.ig .caption{padding:20px 50px 0; line-height:1.4; font-size:40px;}
+.ig .caption .lk{font-weight:700;}
+.ig .caption .time{color:#8e8e8e; font-size:34px; display:block; padding-top:14px;}
+
+/* ═════════════════════════ FACEBOOK PAGE ═════════════════════════ */
+
+.fb{background:#fff; color:#050505; font-size:42px;}
+.fb.dark{background:#18191a; color:#e4e6eb;}
+.fb .topbar{display:flex; align-items:center; justify-content:space-between; padding:4px 50px 26px;}
+.fb .topbar .title{font-size:52px; font-weight:700;}
+.fb .topbar .icons{font-size:48px; display:flex; gap:34px;}
+.fb .cover{height:440px; flex:0 0 auto; background:linear-gradient(120deg,#3a5a8c,#1f2f4a);}
+.fb .avwrap{padding:0 50px; margin-top:-118px;}
+.fb .avatar{
+  width:250px; height:250px; border-radius:50%; border:9px solid #fff;
+  background:linear-gradient(140deg,#5a5a66,#2e2e38); background-size:cover; background-position:center;
+}
+.fb.dark .avatar{border-color:#18191a;}
+/* 700 rather than 800: dropping the 800 weight saves ~55 KB of inlined font for
+   this one rule. See scripts/build-fonts.mjs. */
+.fb .pname{padding:28px 50px 0; font-size:62px; font-weight:700; letter-spacing:-.012em;}
+.fb .meta{padding:10px 50px 0; color:#65676b; font-size:38px; line-height:1.5;}
+.fb.dark .meta{color:#b0b3b8;}
+.fb .btns{display:flex; gap:18px; padding:32px 50px 0;}
+.fb .btns div{
+  flex:1; display:flex; align-items:center; justify-content:center; gap:14px;
+  padding:26px 0; border-radius:14px; background:#1877F2; color:#fff; font-weight:700; font-size:40px;
+}
+.fb .btns div.alt{background:#e4e6eb; color:#050505;}
+.fb.dark .btns div.alt{background:#3a3b3c; color:#e4e6eb;}
+.fb .ptabs{display:flex; margin-top:34px; border-bottom:2px solid #e4e6eb; padding:0 30px;}
+.fb.dark .ptabs{border-color:#3a3b3c;}
+.fb .ptabs div{flex:1; text-align:center; padding:26px 0; font-size:38px; font-weight:600; color:#65676b;}
+.fb.dark .ptabs div{color:#b0b3b8;}
+.fb .ptabs div.on{color:#1877F2; box-shadow:0 -5px 0 #1877F2 inset;}
+.fb .divider{height:16px; flex:0 0 auto; background:#f0f2f5;}
+.fb.dark .divider{background:#0f0f10;}
+.fb .prow{display:flex; align-items:center; gap:24px; padding:30px 50px 0;}
+.fb .pav{width:110px; height:110px; border-radius:50%; background:linear-gradient(140deg,#5a5a66,#2e2e38); background-size:cover; background-position:center;}
+.fb .prow b{font-size:44px;}
+.fb .prow small{display:flex; align-items:center; gap:10px; color:#65676b; font-size:34px; padding-top:4px;}
+.fb.dark .prow small{color:#b0b3b8;}
+.fb .ptext{padding:26px 50px; line-height:1.45;}
+.fb .preact{display:flex; justify-content:space-between; align-items:center; padding:24px 50px; color:#65676b; font-size:36px;}
+.fb .preact > span{display:flex; align-items:center; gap:8px;}
+/* Reaction chips. Real Facebook stacks tiny coloured discs; monochrome outline
+   icons at this size read as smudges, so they get their own colour and a white
+   glyph. Still generic shapes — a thumb and a heart. */
+.fb .reactpill{
+  width:46px; height:46px; border-radius:50%; flex:0 0 auto;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff; font-size:26px; border:3px solid #fff;
+}
+.fb.dark .reactpill{border-color:#18191a;}
+.fb .reactpill + .reactpill{margin-left:-14px;}
+.fb .reactpill.like{background:#1877F2;}
+.fb .reactpill.love{background:#F33E58;}
+.fb .reactpill .ic{stroke-width:2.4;}
+.fb .preact > span > span[contenteditable]{margin-left:6px;}
+.fb.dark .preact{color:#b0b3b8;}
+.fb .pbar{display:flex; border-top:2px solid #e4e6eb; padding:24px 50px;}
+.fb.dark .pbar{border-color:#3a3b3c;}
+.fb .pbar div{
+  flex:1; display:flex; align-items:center; justify-content:center; gap:12px;
+  color:#65676b; font-weight:600; font-size:38px;
+}
+.fb.dark .pbar div{color:#b0b3b8;}
+
+/* ═════════════════════════ TIKTOK ═════════════════════════ */
+
+.tt{background:#000; color:#fff; font-size:42px; text-align:center;}
+.tt .topbar{display:flex; align-items:center; justify-content:space-between; padding:2px 44px 10px; font-size:46px; font-weight:600;}
+.tt .topbar .mid{display:flex; align-items:center; gap:12px; font-size:46px; font-weight:700;}
+.tt .avatar{
+  width:224px; height:224px; border-radius:50%; margin:10px auto 0;
+  background:linear-gradient(140deg,#4a4a55,#22222a); background-size:cover; background-position:center;
+}
+.tt .handle{font-size:44px; font-weight:600; margin-top:22px;}
+.tt .stats{display:flex; justify-content:center; align-items:center; margin-top:28px;}
+.tt .stats > div{padding:0 44px; position:relative;}
+.tt .stats > div + div::before{content:""; position:absolute; left:0; top:14%; height:72%; width:2px; background:#2e2e33;}
+.tt .stats b{display:block; font-size:48px; font-weight:700;}
+.tt .stats span{font-size:32px; color:#8a8a90; margin-top:6px; display:block;}
+.tt .btns{display:flex; gap:14px; justify-content:center; padding:30px 44px 0;}
+.tt .btns .follow{flex:1; max-width:560px; padding:24px 0; border-radius:10px; background:#FE2C55; font-weight:700; font-size:40px;}
+.tt .btns .alt{
+  flex:0 0 108px; padding:24px 0; border-radius:10px; background:#2a2a2e; font-size:38px;
+  display:flex; align-items:center; justify-content:center;
+}
+.tt .bio{padding:28px 90px 0; line-height:1.4; font-size:36px;}
+.tt .link{padding:14px 90px 0; font-size:36px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:12px;}
+.tt .tabs{display:flex; margin-top:30px; border-bottom:2px solid #232326;}
+.tt .tabs div{flex:1; padding:22px 0; font-size:46px; color:#66666d; display:flex; align-items:center; justify-content:center;}
+.tt .tabs div.on{color:#fff; box-shadow:0 -5px 0 #fff inset;}
+.tt .grid{display:grid; grid-template-columns:repeat(3,1fr); gap:4px; margin-top:4px;}
+.tt .grid .cell{
+  aspect-ratio:9/16; position:relative; overflow:hidden; background:#141418; cursor:pointer;
+  background-size:cover; background-position:center;
+}
+.tt .grid .cell.empty::after{
+  content:"+"; position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  color:rgba(255,255,255,.16); font-size:60px; font-weight:200;
+}
+.clean .tt .grid .cell.empty::after{content:"";}
+.tt .grid .vslot{aspect-ratio:9/16; width:100%;}
+.ttbig .tt .grid .vslot{grid-column:span 2; grid-row:span 2; aspect-ratio:auto;}
+.tt .views{
+  position:absolute; left:16px; bottom:14px; z-index:75; font-size:30px; font-weight:600;
+  text-shadow:0 2px 8px rgba(0,0,0,.85); display:flex; align-items:center; gap:8px;
+}
+.tt .pin{
+  position:absolute; left:14px; top:14px; z-index:75; background:#FE2C55; font-size:26px;
+  font-weight:700; padding:6px 14px; border-radius:6px;
+}

@@ -1,0 +1,114 @@
+{
+  "version": 1,
+  "name": "Example accounts",
+  "_comment": [
+    "A preset is a bag of accounts. Every key under \"fields\" matches a data-f",
+    "attribute in index.html; anything you leave out falls back to the markup",
+    "default, and anything unrecognised is ignored, so it is safe to start from",
+    "a partial file. \"slug\" names the exported PNGs, \"label\" is what the",
+    "dropdown shows.",
+    "Values are inserted as HTML, so <br> and <b> work — which also means you",
+    "should only open preset files you trust.",
+    "Copy this file, edit it, and load it with the Load… button. To have it",
+    "picked up automatically, add the filename to presets/index.json."
+  ],
+  "accounts": {
+    "cafe": {
+      "label": "Kohvik Null (café)",
+      "slug": "kohvik-null",
+      "fields": {
+        "time": "9:41",
+
+        "igHandle": "kohviknull",
+        "igPosts": "418",
+        "igFollowers": "6,241",
+        "igFollowing": "312",
+        "igName": "Kohvik Null",
+        "igCat": "Coffee shop",
+        "igBio": "Slow coffee and too much cake<br>Open 8–18, closed Mondays",
+        "igLink": "kohviknull.ee",
+        "igPostUser": "kohviknull",
+        "igPostLoc": "Tallinn, Estonia",
+        "igLikes": "327 likes",
+        "igCaption": "<b>kohviknull</b> New single origin on bar this week",
+        "igTime": "4 HOURS AGO",
+
+        "fbTitle": "Kohvik Null",
+        "fbName": "Kohvik Null",
+        "fbMeta1": "Coffee shop · Telliskivi 60a, Tallinn",
+        "fbMeta2": "3,908 followers · 142 following",
+        "fbPostName": "Kohvik Null",
+        "fbPostTime": "4h",
+        "fbPostText": "New single origin on bar this week. Come and argue about it with us.",
+        "fbReact": "148",
+        "fbReact2": "23 comments",
+
+        "ttTop": "kohviknull",
+        "ttHandle": "@kohviknull",
+        "ttFollowing": "94",
+        "ttFollowers": "11.2K",
+        "ttLikes": "148.7K",
+        "ttBio": "Coffee, cake, and a very loud grinder",
+        "ttLink": "kohviknull.ee",
+        "ttViews0": "212.4K",
+        "ttViews1": "48.1K",
+        "ttViews2": "17,903",
+        "ttViews3": "92.6K",
+        "ttViews4": "8,214",
+        "ttViews5": "36.9K",
+        "ttViews6": "5,471",
+        "ttViews7": "61.3K",
+        "ttViews8": "12.8K"
+      }
+    },
+
+    "band": {
+      "label": "Hallid Aknad (band)",
+      "slug": "hallid-aknad",
+      "fields": {
+        "time": "21:15",
+
+        "igHandle": "hallidaknad",
+        "igPosts": "96",
+        "igFollowers": "2,417",
+        "igFollowing": "188",
+        "igName": "HALLID AKNAD",
+        "igCat": "Musician/band",
+        "igBio": "Four people, one van<br>New record out now",
+        "igLink": "hallidaknad.bandcamp.com",
+        "igPostUser": "hallidaknad",
+        "igPostLoc": "Tartu, Estonia",
+        "igLikes": "512 likes",
+        "igCaption": "<b>hallidaknad</b> Last night, Genialistide Klubi",
+        "igTime": "12 HOURS AGO",
+
+        "fbTitle": "Hallid Aknad",
+        "fbName": "Hallid Aknad",
+        "fbMeta1": "Musician/band · Tartu, Estonia",
+        "fbMeta2": "1,733 followers",
+        "fbPostName": "Hallid Aknad",
+        "fbPostTime": "12h",
+        "fbPostText": "Thank you Tartu. Photos from last night up on the site.",
+        "fbReact": "204",
+        "fbReact2": "31 comments",
+
+        "ttTop": "hallidaknad",
+        "ttHandle": "@hallidaknad",
+        "ttFollowing": "51",
+        "ttFollowers": "4,806",
+        "ttLikes": "39.2K",
+        "ttBio": "Four people, one van",
+        "ttLink": "hallidaknad.bandcamp.com",
+        "ttViews0": "88.7K",
+        "ttViews1": "21.4K",
+        "ttViews2": "6,902",
+        "ttViews3": "44.1K",
+        "ttViews4": "3,318",
+        "ttViews5": "15.6K",
+        "ttViews6": "9,024",
+        "ttViews7": "27.8K",
+        "ttViews8": "5,140"
+      }
+    }
+  }
+}

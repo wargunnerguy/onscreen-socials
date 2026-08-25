@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Onscreen Socials — social profile mockups for video</title>
+<meta name="description" content="Browser-based social profile mockups for film and video production. Three phone screens at true iPhone resolution, drop in your footage, export transparent PNGs. No account, no upload, no server.">
+<meta name="theme-color" content="#101014">
+<meta name="color-scheme" content="dark">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Onscreen Socials">
+<meta property="og:description" content="Social profile mockups for video. Three phone screens at true iPhone resolution, exported as transparent PNGs. Runs entirely in the browser.">
+<!-- og:url and og:image want absolute URLs, so they are left out until the site
+     has a domain. See the Deploy section of README.md. -->
+
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23101014'/%3E%3Crect x='10' y='4.5' width='12' height='23' rx='3.5' fill='none' stroke='%233d8a64' stroke-width='2'/%3E%3Ccircle cx='16' cy='13' r='2.7' fill='%233d8a64'/%3E%3Cpath d='M11.6 23.4c.9-3.2 7.9-3.2 8.8 0' fill='none' stroke='%233d8a64' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+
+<!-- fonts.css is generated and inlines Inter as base64; see scripts/build-fonts.mjs.
+     Both files are re-read as text by js/export.js and injected into the export. -->
+<link rel="stylesheet" href="css/fonts.css">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body class="fit-crop bleed">
+
+<div id="bar">
+  <div class="grp">
+    <strong>Account</strong>
+    <select id="entity" title="Switch account"></select>
+    <button class="all" id="loadBtn" title="Load a preset file (.json)">Load…</button>
+    <button class="all" id="resetBtn" title="Discard edits for this account">Reset</button>
+    <span id="saveState"></span>
+  </div>
+
+  <span class="sep"></span>
+
+  <div class="grp">
+    <strong>Export</strong>
+    <button data-ex="0">Instagram</button>
+    <button data-ex="1">Facebook</button>
+    <button data-ex="2">TikTok</button>
+    <button class="all" id="exAll">All three</button>
+    <label><input type="checkbox" id="withFrame" checked> incl. frame</label>
+  </div>
+
+  <span class="sep"></span>
+
+  <div class="grp">
+    <span id="swatches" title="Backdrop — preview only, never exported"></span>
+    <label><input type="checkbox" id="frameChk" checked> Frame</label>
+    <label><input type="checkbox" id="statusChk" checked> Status</label>
+    <label>Fit
+      <select id="fitSel">
+        <option value="fit-crop">Crop</option>
+        <option value="fit-blur">Blur fill</option>
+        <option value="fit-letter">Letterbox</option>
+      </select>
+    </label>
+    <label>Zoom <input type="range" id="zoom" min="8" max="100" value="22"><span id="zoomVal">22%</span></label>
+  </div>
+
+  <details class="more">
+    <summary>More ▾</summary>
+    <div class="panel">
+      <label><input type="checkbox" id="fbDark"> Facebook dark mode</label>
+      <label><input type="checkbox" id="ttBig"> TikTok big tile</label>
+      <label><input type="checkbox" id="bleedChk" checked> Bleed off bottom edge</label>
+      <hr>
+      <label>Dim <input type="range" id="dim" min="0" max="70" value="25"><span id="dimVal">25%</span></label>
+      <label><input type="checkbox" id="guideChk"> Slot guides</label>
+      <hr>
+      <label><input type="checkbox" id="markChk"> Prop watermark</label>
+    </div>
+  </details>
+
+  <span class="hint">Drop media · click text to edit · <kbd>H</kbd> clean view</span>
+</div>
+
+<div id="stagewrap">
+<div id="stage">
+
+  <!-- ══════════ INSTAGRAM ══════════ -->
+  <div class="phone">
+    <div class="island"></div>
+    <div class="screen ig">
+      <div class="statusbar">
+        <span contenteditable data-f="time">9:41</span>
+        <div class="sigs">
+          <span class="bars"><i style="height:12px"></i><i style="height:18px"></i><i style="height:24px"></i><i style="height:30px"></i></span>
+          <span class="batt"></span>
+        </div>
+      </div>
+      <div class="topbar">
+        <div class="handle"><span contenteditable data-f="igHandle">yourhandle</span><i data-icon="chevron-down"></i></div>
+        <div class="icons"><i data-icon="plus-square"></i><i data-icon="menu"></i></div>
+      </div>
+      <div class="head">
+        <div class="avatar tile empty" data-img data-mid="ig-avatar"></div>
+        <div class="stats">
+          <div><b contenteditable data-f="igPosts">210</b><span>posts</span></div>
+          <div><b contenteditable data-f="igFollowers">1527</b><span>followers</span></div>
+          <div><b contenteditable data-f="igFollowing">158</b><span>following</span></div>
+        </div>
+      </div>
+      <div class="bio">
+        <div class="name" contenteditable data-f="igName">Your Account Name</div>
+        <div class="cat" contenteditable data-f="igCat">Category</div>
+        <div contenteditable data-f="igBio">One line about the account<br>and a second line under it</div>
+        <div class="link" contenteditable data-f="igLink">example.com</div>
+      </div>
+      <div class="btns">
+        <div>Follow</div>
+        <div class="alt">Message</div>
+        <div class="alt sq"><i data-icon="chevron-down"></i></div>
+      </div>
+      <div class="prow">
+        <div class="pav tile empty" data-img data-mid="ig-post-avatar"></div>
+        <div>
+          <b contenteditable data-f="igPostUser">yourhandle</b>
+          <small contenteditable data-f="igPostLoc">Tallinn, Estonia</small>
+        </div>
+      </div>
+      <div class="vslot" data-slot data-mid="ig-slot" data-ratio>
+        <div class="layer fill"></div><div class="layer main"></div>
+        <div class="ph"><b>+</b><span>VIDEO SLOT</span></div>
+        <div class="scrim"></div>
+        <div class="guide"><span></span></div>
+      </div>
+      <div class="acts">
+        <i data-icon="heart"></i><i data-icon="comment"></i><i data-icon="send"></i>
+        <span class="r"><i data-icon="bookmark"></i></span>
+      </div>
+      <div class="caption">
+        <div><span class="lk" contenteditable data-f="igLikes">184 likes</span></div>
+        <div contenteditable data-f="igCaption"><b>yourhandle</b> Caption goes here</div>
+        <span class="time" contenteditable data-f="igTime">2 HOURS AGO</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ FACEBOOK PAGE ══════════
+       A Page, not a personal profile: Follow rather than Like, because the New
+       Pages Experience retired the Like button on Page headers. Posts keep Like. -->
+  <div class="phone">
+    <div class="island"></div>
+    <div class="screen fb" id="fbScreen">
+      <div class="statusbar">
+        <span contenteditable data-f="time">9:41</span>
+        <div class="sigs">
+          <span class="bars"><i style="height:12px"></i><i style="height:18px"></i><i style="height:24px"></i><i style="height:30px"></i></span>
+          <span class="batt"></span>
+        </div>
+      </div>
+      <div class="topbar">
+        <div class="title" contenteditable data-f="fbTitle">Your Page</div>
+        <div class="icons"><i data-icon="search"></i><i data-icon="more"></i></div>
+      </div>
+      <div class="cover tile empty" data-img data-mid="fb-cover"></div>
+      <div class="avwrap"><div class="avatar tile empty" data-img data-mid="fb-avatar"></div></div>
+      <div class="pname" contenteditable data-f="fbName">Your Page</div>
+      <div class="meta">
+        <span contenteditable data-f="fbMeta1">Category · Tallinn, Estonia</span><br>
+        <span contenteditable data-f="fbMeta2">1,204 followers</span>
+      </div>
+      <div class="btns">
+        <div><i data-icon="plus"></i> Follow</div>
+        <div class="alt">Message</div>
+        <div class="alt" style="flex:0 0 120px"><i data-icon="more"></i></div>
+      </div>
+      <div class="ptabs"><div class="on">Posts</div><div>About</div><div>Photos</div><div>More</div></div>
+      <div class="divider"></div>
+      <div class="prow">
+        <div class="pav tile empty" data-img data-mid="fb-post-avatar"></div>
+        <div>
+          <b contenteditable data-f="fbPostName">Your Page</b>
+          <small><span contenteditable data-f="fbPostTime">2h</span> · <i data-icon="globe"></i></small>
+        </div>
+      </div>
+      <div class="ptext" contenteditable data-f="fbPostText">Post text goes here.</div>
+      <div class="vslot" data-slot data-mid="fb-slot" data-ratio>
+        <div class="layer fill"></div><div class="layer main"></div>
+        <div class="ph"><b>+</b><span>VIDEO SLOT</span></div>
+        <div class="scrim"></div>
+        <div class="guide"><span></span></div>
+      </div>
+      <div class="preact">
+        <span>
+          <span class="reactpill like"><i data-icon="thumb-up"></i></span>
+          <span class="reactpill love"><i data-icon="heart-solid"></i></span>
+          <span contenteditable data-f="fbReact">62</span>
+        </span>
+        <span contenteditable data-f="fbReact2">4 comments</span>
+      </div>
+      <div class="pbar">
+        <div><i data-icon="thumb-up"></i> Like</div>
+        <div><i data-icon="comment"></i> Comment</div>
+        <div><i data-icon="share"></i> Share</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ TIKTOK ══════════
+       Keeps the real 3-wide 9:16 grid: that thumbnail wall is the most
+       recognisable thing about a TikTok profile. -->
+  <div class="phone">
+    <div class="island"></div>
+    <div class="screen tt">
+      <div class="statusbar">
+        <span contenteditable data-f="time">9:41</span>
+        <div class="sigs">
+          <span class="bars"><i style="height:12px"></i><i style="height:18px"></i><i style="height:24px"></i><i style="height:30px"></i></span>
+          <span class="batt"></span>
+        </div>
+      </div>
+      <div class="topbar">
+        <i data-icon="chevron-left"></i>
+        <span class="mid"><span contenteditable data-f="ttTop">yourhandle</span><i data-icon="chevron-down"></i></span>
+        <i data-icon="more"></i>
+      </div>
+      <div class="avatar tile empty" data-img data-mid="tt-avatar"></div>
+      <div class="handle" contenteditable data-f="ttHandle">@yourhandle</div>
+      <div class="stats">
+        <div><b contenteditable data-f="ttFollowing">73</b><span>Following</span></div>
+        <div><b contenteditable data-f="ttFollowers">2841</b><span>Followers</span></div>
+        <div><b contenteditable data-f="ttLikes">19.4K</b><span>Likes</span></div>
+      </div>
+      <div class="btns">
+        <div class="follow">Follow</div>
+        <div class="alt"><i data-icon="mail"></i></div>
+        <div class="alt"><i data-icon="chevron-down"></i></div>
+      </div>
+      <div class="bio" contenteditable data-f="ttBio">One line about the account</div>
+      <div class="link"><i data-icon="link"></i><span contenteditable data-f="ttLink">example.com</span></div>
+      <div class="tabs">
+        <div class="on"><i data-icon="grid-solid"></i></div>
+        <div><i data-icon="lock-solid"></i></div>
+        <div><i data-icon="heart-solid"></i></div>
+      </div>
+      <div class="grid">
+        <div class="vslot" data-slot data-mid="tt-slot">
+          <div class="layer fill"></div><div class="layer main"></div>
+          <div class="ph"><b>+</b><span>VIDEO</span></div>
+          <div class="scrim"></div>
+          <span class="pin">Pinned</span>
+          <span class="views"><i data-icon="play-solid"></i><span contenteditable data-f="ttViews0">44.1K</span></span>
+          <div class="guide"><span></span></div>
+        </div>
+        <div class="cell empty" data-img data-mid="tt-cell-1"><span class="views"><i data-icon="play-solid"></i><span contenteditable data-f="ttViews1">12.8K</span></span></div>
+        <div class="cell empty" data-img data-mid="tt-cell-2"><span class="views"><i data-icon="play-solid"></i><span contenteditable data-f="ttViews2">9,417</span></span></div>
+        <div class="cell empty" data-img data-mid="tt-cell-3"><span class="views"><i data-icon="play-solid"></i><span contenteditable data-f="ttViews3">31.2K</span></span></div>
+        <div class="cell empty" data-img data-mid="tt-cell-4"><span class="views"><i data-icon="play-solid"></i><span contenteditable data-f="ttViews4">6,208</span></span></div>
+        <div class="cell empty" data-img data-mid="tt-cell-5"><span class="views"><i data-icon="play-solid"></i><span contenteditable data-f="ttViews5">18.5K</span></span></div>
+        <div class="cell empty" data-img data-mid="tt-cell-6"><span class="views"><i data-icon="play-solid"></i><span contenteditable data-f="ttViews6">4,933</span></span></div>
+        <div class="cell empty" data-img data-mid="tt-cell-7"><span class="views"><i data-icon="play-solid"></i><span contenteditable data-f="ttViews7">27.6K</span></span></div>
+        <div class="cell empty" data-img data-mid="tt-cell-8"><span class="views"><i data-icon="play-solid"></i><span contenteditable data-f="ttViews8">8,120</span></span></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div id="notice" hidden></div>
+
+<input type="file" id="picker" accept="image/*,video/*" hidden>
+<input type="file" id="presetPicker" accept="application/json,.json" hidden>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
