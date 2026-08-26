@@ -17,13 +17,16 @@ the machine.
 
 ## Run it
 
-It is a static site, so any web server will do:
-
 ```bash
-npx serve .          # or: python -m http.server
+node scripts/serve.mjs        # http://127.0.0.1:8080/
 ```
 
-Then open the address it prints.
+Any static server works, but use this one while editing. `python -m http.server` and
+`npx serve` send `Last-Modified` and no `Cache-Control`, which lets the browser reuse
+ES modules and stylesheets from cache without revalidating — so your edits appear to do
+nothing and a fix looks like a bug. This one sends `no-store`.
+
+The page also warns you if the modules it loaded are older than the ones on the server.
 
 Opening `index.html` straight off disk will *not* work — the page uses ES modules and
 loads its accounts with `fetch`, and browsers block both on `file://`. That is the one
