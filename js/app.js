@@ -6,7 +6,7 @@
  */
 
 import { expandIcons } from './icons.js';
-import { loadAll, validate, cache, buildDoc } from './presets.js';
+import { loadAll, validate, cache, clearCache, buildDoc } from './presets.js';
 import * as state from './state.js';
 import { initMedia } from './media.js';
 import { applyLang, DEFAULT_LANG } from './strings.js';
@@ -149,6 +149,26 @@ $('saveGo').addEventListener('click', () => {
   flash(`saved ${name}`);
 });
 
+/* Saved edits layer over the preset, which is what you want while working but
+ * means an edited field keeps winning after the preset file changes underneath
+ * it. Reset does one account; this drops the lot. */
+let wiping = false;
+
+$('wipeBtn').addEventListener('click', () => {
+  const warning = [
+    'Discard saved edits for every account, and forget any preset opened with Load…?',
+    '',
+    'The preset files themselves are not touched.',
+  ].join('\n');
+  if (!confirm(warning)) return;
+  // The reload below fires beforeunload, which would otherwise persist the
+  // still-displayed account straight back into the storage just emptied.
+  wiping = true;
+  state.clearAll();
+  clearCache();
+  location.reload();
+});
+
 /* ───────────────────────── saving ───────────────────────── */
 
 let saveTimer;
@@ -157,6 +177,7 @@ document.addEventListener('input', () => {
   saveTimer = setTimeout(() => state.persist(current), 700);
 });
 window.addEventListener('beforeunload', () => {
+  if (wiping) return;
   try { state.persist(current); } catch { /* nothing useful to do while unloading */ }
 });
 

@@ -35,6 +35,12 @@ export function onSaveStatus(fn) { onStatus = fn; }
 export function hasEdits(key) { return Object.hasOwn(STATE, key); }
 export function clearEdits(key) { delete STATE[key]; }
 
+/** Drop every saved edit. The preset files themselves are untouched. */
+export function clearAll() {
+  STATE = {};
+  try { localStorage.removeItem(KEY); } catch { /* nothing to remove */ }
+}
+
 /* ───────────────────────── DOM ↔ state ───────────────────────── */
 
 function mediaEls() { return document.querySelectorAll('[data-img],[data-slot]'); }

@@ -100,6 +100,17 @@ preset that pointed at a remote image would turn opening it into a callback to w
 wrote it. Video is never written out — it is session-only everywhere else, and a few
 seconds of 1080p would dwarf the rest of the file.
 
+Load order matters and has bitten already. `presets/local.json` is applied **after** the
+localStorage preset cache: if that file is on disk it is the thing being edited, so it has
+to outrank a copy cached in the browser from an earlier Load… Otherwise edits to the file
+appear to do nothing at all.
+
+The same trap exists one level down — saved per-account edits layer over the preset, so an
+edited field keeps winning after the preset file changes underneath it. That is correct
+while working, but it means "I changed the JSON and nothing happened" is usually stale
+browser state rather than a bug. Reset clears one account; Clear saved edits clears
+everything, both storage keys included.
+
 `presets/local.json` is only probed when `location.hostname` is local. The fetch failing is
 harmless, but the browser logs a 404 regardless, and a public site should not hand every
 visitor a console error. On a deployment the Load… button is the way in, and it caches

@@ -36,6 +36,8 @@ cost of the layout; a local server is a single command.
   Click one to open a file picker instead.
 - **Export** writes a PNG per platform. `All three` does the set.
 - **Save…** writes the accounts back out as a `.json` you can send to someone.
+- **Reset** discards edits for the selected account; **Clear saved edits** under More ▾
+  discards everything and forgets any preset opened with Load…
 - **`H`** hides the toolbar for a clean screen capture.
 - **More ▾** holds the fiddly controls: Facebook dark mode, TikTok big tile, bleed, dim,
   slot guides, and the prop watermark.
@@ -107,6 +109,9 @@ deployed copy without committing them.
 `presets/local.json` is gitignored and loaded automatically **when you are running the
 site locally**. That is the place for account sets you do not want on GitHub. A deployed
 copy does not look for it — there, use **Load…** once and the browser remembers it.
+
+> Edited a preset file and nothing changed? Your browser is holding saved edits that
+> layer on top of it. Reset that account, or use **Clear saved edits**.
 
 > Field values are inserted as HTML so that `<br>` and `<b>` work in bios and captions.
 > Only open preset files you trust.

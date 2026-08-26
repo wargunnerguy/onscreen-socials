@@ -210,15 +210,27 @@ export async function loadAll() {
   // Load… button is the way in, and it caches what it loads.
   const local = ['localhost', '127.0.0.1', '[::1]', ''].includes(location.hostname);
 
-  for (const file of [...listed, ...(local ? ['local.json'] : [])]) {
+  for (const file of listed) {
     const url = `presets/${file}`;
     try {
       Object.assign(accounts, validate(await fetchJson(url), url));
     } catch (err) {
-      if (file !== 'local.json') problems.push(String(err.message ?? err));
+      problems.push(String(err.message ?? err));
     }
   }
 
+  // A preset loaded by hand, remembered so it survives a reload on a deployed
+  // site where the file itself was never published.
   Object.assign(accounts, readCache());
+
+  // presets/local.json goes last on purpose. If the file is sitting on disk it
+  // is the thing being edited, so it has to outrank a copy cached in the browser
+  // from some earlier Load… — otherwise edits to the file appear to do nothing.
+  if (local) {
+    try {
+      Object.assign(accounts, validate(await fetchJson('presets/local.json'), 'presets/local.json'));
+    } catch { /* not present is the normal case */ }
+  }
+
   return { accounts, problems };
 }
