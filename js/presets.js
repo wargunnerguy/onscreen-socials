@@ -136,9 +136,14 @@ export async function loadAll() {
     problems.push('presets/index.json could not be read');
   }
 
-  // presets/local.json is gitignored, so a 404 here is the normal case on a
-  // public deployment and is not worth reporting.
-  for (const file of [...listed, 'local.json']) {
+  // presets/local.json is gitignored, so it exists when someone is running their
+  // own copy and never on a deployed site. Only probe for it locally: the fetch
+  // failing is harmless, but the browser still logs a 404 to the console, and
+  // every visitor seeing one on a public site is untidy. On a deployment the
+  // Load… button is the way in, and it caches what it loads.
+  const local = ['localhost', '127.0.0.1', '[::1]', ''].includes(location.hostname);
+
+  for (const file of [...listed, ...(local ? ['local.json'] : [])]) {
     const url = `presets/${file}`;
     try {
       Object.assign(accounts, validate(await fetchJson(url), url));

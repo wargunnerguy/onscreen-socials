@@ -82,8 +82,9 @@ it and list it in `presets/index.json`, or press **Load…** and pick it — a h
 preset is remembered in the browser, which is how you get private accounts onto a
 deployed copy without committing them.
 
-`presets/local.json` is gitignored and loaded automatically if present. That is the place
-for account sets you do not want on GitHub.
+`presets/local.json` is gitignored and loaded automatically **when you are running the
+site locally**. That is the place for account sets you do not want on GitHub. A deployed
+copy does not look for it — there, use **Load…** once and the browser remembers it.
 
 > Field values are inserted as HTML so that `<br>` and `<b>` work in bios and captions.
 > Only open preset files you trust.

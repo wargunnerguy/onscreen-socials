@@ -83,6 +83,18 @@ Characters outside the bundled set fall back to the system font. The set covers 
 Polish, Czech/Slovak, Hungarian, Turkish, Romanian and Croatian — widen `EXTRA` in the
 build script if you need more.
 
+## Presets
+
+Accounts are data, not code. `js/presets.js` merges four sources — an inline demo, the
+files listed in `presets/index.json`, `presets/local.json`, and whatever the user loaded
+by hand — with later sources winning on a key clash. The inline demo exists so the app
+still works when every fetch fails.
+
+`presets/local.json` is only probed when `location.hostname` is local. The fetch failing is
+harmless, but the browser logs a 404 regardless, and a public site should not hand every
+visitor a console error. On a deployment the Load… button is the way in, and it caches
+what it loads.
+
 ## State
 
 Per-account edits persist to `localStorage` under `onscreen-socials-v1`. Text and images
