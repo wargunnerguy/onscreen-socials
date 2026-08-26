@@ -7,6 +7,7 @@
  */
 
 import { rememberAspect, clearOffset } from './cover.js';
+import { applyAvatar } from './avatars.js';
 
 const ACCEPTED = /^(image|video)\//;
 
@@ -32,9 +33,10 @@ function readAsDataUrl(file) {
   });
 }
 
-async function loadInto(el, file) {
+async function loadInto(el, file, onlyThis = false) {
   const url = await readAsDataUrl(file);
   const isVideo = file.type.startsWith('video/');
+  let carried = 0;
 
   if (el.hasAttribute('data-slot')) {
     const main = el.querySelector('.main');
@@ -51,7 +53,11 @@ async function loadInto(el, file) {
       clearOffset(el);          // a new picture starts at the top
       rememberAspect(el);
     }
+    // One profile picture serves every avatar slot unless one has been
+    // deliberately given its own.
+    if (el.hasAttribute('data-avatar')) carried = applyAvatar(el, url, onlyThis);
   }
+  return carried;
 }
 
 /**
@@ -62,14 +68,18 @@ export function initMedia({ onChange = () => {}, onError = () => {} } = {}) {
   const picker = document.getElementById('picker');
   let target = null;
 
+  // Alt means "this slot only". For the picker it has to be remembered from the
+  // click, since the change event fires long after the key was held.
+  let onlyThis = false;
+
   const accept = async (el, file) => {
     if (!file || !ACCEPTED.test(file.type)) {
       onError('That file is not an image or a video.');
       return;
     }
     try {
-      await loadInto(el, file);
-      onChange(el, file);
+      const carried = await loadInto(el, file, onlyThis);
+      onChange(el, file, carried);
     } catch (err) {
       onError(`Could not load ${file.name}: ${err.message}`);
     }
@@ -82,6 +92,7 @@ export function initMedia({ onChange = () => {}, onError = () => {} } = {}) {
       if (ev.target.isContentEditable) return;
       // A drag to reposition ends in a click; that should not open the picker.
       if (el.dataset.dragged) { delete el.dataset.dragged; return; }
+      onlyThis = ev.altKey;
       target = el;
       picker.value = '';
       picker.click();
@@ -95,6 +106,7 @@ export function initMedia({ onChange = () => {}, onError = () => {} } = {}) {
     el.addEventListener('drop', (ev) => {
       ev.preventDefault();
       el.style.outline = '';
+      onlyThis = ev.altKey;
       accept(el, ev.dataTransfer?.files?.[0]);
     });
   }

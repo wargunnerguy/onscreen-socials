@@ -36,6 +36,9 @@ cost of the layout; a local server is a single command.
   session-only.
 - **Drop an image or a video** on an avatar, a cover, a TikTok tile or a video slot.
   Click one to open a file picker instead.
+- **One profile picture serves every avatar** — the three profile headers and the two
+  post rows. Drop it once. Hold **Alt** while dropping (or while clicking to pick) to give
+  a single slot its own picture; it stops following until you drop on it again without Alt.
 - **Export** writes a PNG per platform. `All three` does the set.
 - **Save…** writes the accounts back out as a `.json` you can send to someone.
 - **Platform logos**: each phone's top bar starts with an empty slot — drop an Instagram,

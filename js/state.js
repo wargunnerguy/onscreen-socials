@@ -11,6 +11,7 @@
 
 import { rememberAspect, clearOffset, getOffset } from './cover.js';
 import * as store from './store.js';
+import { getShared, setShared, inferShared, isOwn, setOwn } from './avatars.js';
 
 export const KEY = 'onscreen-socials-v1';
 
@@ -85,8 +86,15 @@ export function capture(key) {
       // Where a repositionable image has been dragged to.
       const y = getOffset(el);
       if (y) media[id].y = y;
+      // An avatar slot that has opted out of the shared picture.
+      if (el.hasAttribute('data-avatar') && isOwn(el)) media[id].own = true;
     }
   }
+
+  // Not a slot, so nothing in the DOM carries it: which picture the avatar
+  // slots are currently following. See js/avatars.js.
+  const shared = getShared();
+  if (shared) media._avatar = { t: 'bg', s: shared };
 
   STATE[key] = { fields, media };
 }
@@ -134,6 +142,7 @@ export function restore(key, preset) {
     } else if (rec) {
       el.style.backgroundImage = rec.s;
       el.classList.remove('empty');
+      if (el.hasAttribute('data-avatar')) setOwn(el, rec.own === true);
       if (el.hasAttribute('data-reposition')) {
         rememberAspect(el);
         // setOffset clamps against the image, which is not measured yet on this
@@ -149,8 +158,13 @@ export function restore(key, preset) {
       el.style.backgroundImage = '';
       el.classList.add('empty');
       if (el.hasAttribute('data-reposition')) clearOffset(el);
+      if (el.hasAttribute('data-avatar')) setOwn(el, false);
     }
   }
+
+  // Accounts saved before avatars were linked have no _avatar; work it out from
+  // what the slots are actually showing.
+  setShared(media._avatar?.s ?? inferShared());
 }
 
 /* ───────────────────────── persistence ───────────────────────── */

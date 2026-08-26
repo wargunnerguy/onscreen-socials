@@ -89,6 +89,16 @@ what Facebook lets you drag too. The offset is stored in real pixels next to the
 the account's media record, so it reloads, travels in a preset and reaches the export.
 Pointer travel is divided by the stage scale, since the stage is CSS-scaled for viewing.
 
+Avatars are linked (`js/avatars.js`). An account's picture appears in five slots and is
+almost always the same image, so a dropped picture goes to all of them; Alt confines it to
+one, which then opts out until dropped on again without Alt.
+
+The opt-out is a stored flag, not something inferred from comparing the images. The first
+attempt compared each slot against the picture they were sharing, which cannot tell
+"change the picture everywhere" apart from "give this one slot something different" —
+both look like a drop on a slot that is currently in step, and the test caught it spreading
+an intended override across all five.
+
 ## Presets
 
 Accounts are data, not code. `js/presets.js` merges four sources — an inline demo, the

@@ -123,7 +123,14 @@ function validateMedia(media) {
     }).map(([id, rec]) => [
       id,
       // y is the vertical crop of a repositionable image, in real pixels.
-      Number.isFinite(rec.y) ? { t: rec.t, s: rec.s, y: rec.y } : { t: rec.t, s: rec.s },
+      {
+        t: rec.t,
+        s: rec.s,
+        // y: vertical crop of a repositionable image. own: an avatar slot that
+        // has opted out of the account's shared profile picture.
+        ...(Number.isFinite(rec.y) ? { y: rec.y } : {}),
+        ...(rec.own === true ? { own: true } : {}),
+      },
     ])
   );
 }

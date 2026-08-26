@@ -359,7 +359,10 @@ $('exAll').addEventListener('click', () => runExport([...Array(platformCount).ke
 /* ───────────────────────── media ───────────────────────── */
 
 initMedia({
-  onChange: () => state.persist(current),
+  onChange: (el, file, carried) => {
+    state.persist(current);
+    if (carried) flash(`applied to ${carried + 1} avatar slots`);
+  },
   onError: (msg) => alert(msg),
 });
 
