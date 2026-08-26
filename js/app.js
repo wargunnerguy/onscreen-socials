@@ -225,6 +225,7 @@ toggleClass('statusChk', 'nostatus', true);
 toggleClass('guideChk', 'guides');
 toggleClass('bleedChk', 'bleed', true, true);
 toggleClass('ttBig', 'ttbig', false, true);
+toggleClass('ttWall', 'ttwall', false, true);
 toggleClass('markChk', 'watermark');
 toggleClass('logoChk', 'nologo', true);
 

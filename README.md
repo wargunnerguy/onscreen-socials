@@ -39,6 +39,9 @@ cost of the layout; a local server is a single command.
 - **Platform logos**: each phone's top bar starts with an empty slot — drop an Instagram,
   Facebook or TikTok logo on it. Colour and layout alone do not tell an audience which
   app they are looking at.
+- **TikTok: one wall image** under More ▾ swaps the nine-cell grid for a single drop
+  area — screenshot the whole profile grid and drop it once, instead of sourcing nine
+  thumbnails. It fills the width and runs off the bottom edge.
 - **Reset** discards edits for the selected account; **Clear saved edits** under More ▾
   discards everything and forgets any preset opened with Load…
 - **`H`** hides the toolbar for a clean screen capture.

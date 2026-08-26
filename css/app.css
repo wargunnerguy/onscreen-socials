@@ -439,6 +439,33 @@ input[type=range]{width:88px; accent-color:#3d8a64;}
 .clean .tt .grid .cell.empty::after{content:"";}
 .tt .grid .vslot{aspect-ratio:9/16; width:100%;}
 .ttbig .tt .grid .vslot{grid-column:span 2; grid-row:span 2; aspect-ratio:auto;}
+
+/* One image standing in for the whole video wall: screenshot the profile grid
+   and drop it here rather than sourcing nine separate thumbnails. Fits like the
+   Facebook cover — full width, cropped at the bottom — so the columns line up
+   with the edges of the screen and the wall runs off the bottom the way a real
+   feed does. flex:1 makes it take exactly the space left below the tabs.
+   Longhands, because background-image is what JS overwrites on drop. */
+.tt .wall{
+  display:none; flex:1 1 auto; margin-top:4px;
+  background-color:#141418;
+  background-size:100% auto;
+  background-position:top center;
+  background-repeat:no-repeat;
+}
+/* Empty: the same hatching the video slots use, so it reads as a drop target
+   rather than as a black gap. Cleared for capture, and overwritten anyway the
+   moment an image lands on it. */
+.tt .wall.empty{
+  background-image:repeating-linear-gradient(45deg,#1c1c22 0 40px,#191920 40px 80px);
+}
+.clean .tt .wall.empty{background-image:none;}
+.tt .wall.empty::after{
+  content:"VIDEO WALL"; font-size:34px; font-weight:600; letter-spacing:.1em;
+  align-items:flex-start; padding-top:120px;
+}
+.ttwall .tt .grid{display:none;}
+.ttwall .tt .wall{display:block;}
 .tt .views{
   position:absolute; left:16px; bottom:14px; z-index:75; font-size:30px; font-weight:600;
   text-shadow:0 2px 8px rgba(0,0,0,.85); display:flex; align-items:center; gap:8px;
