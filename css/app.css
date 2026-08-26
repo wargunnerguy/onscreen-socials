@@ -192,19 +192,22 @@ input[type=range]{width:88px; accent-color:#3d8a64;}
 }
 .brand img{height:100%; width:auto; display:block;}
 
-/* Empty slot: a visible target while editing, gone from the export. */
+/* Empty slot: a visible target while editing, gone from the export. Wider than
+   it is tall, because most platform marks are wordmarks — a square placeholder
+   both hides easily at low zoom and misrepresents what will fit. */
 .brand:empty{
-  width:1em; border:3px dashed rgba(140,140,150,.55); border-radius:10px;
+  width:2.6em; border:3px dashed rgba(150,150,160,.7); border-radius:10px;
 }
 .brand:empty::after{
-  content:"+"; position:absolute; inset:0;
+  content:"LOGO"; position:absolute; inset:0;
   display:flex; align-items:center; justify-content:center;
-  color:rgba(140,140,150,.75); font-size:.7em; font-weight:300;
+  color:rgba(150,150,160,.9); font-size:.3em; font-weight:600; letter-spacing:.12em;
 }
 .clean .brand:empty, .nologo .brand{display:none;}
 
-/* The Facebook top bar is white, so a slot outline needs to be visible on it. */
-.fb .brand:empty{border-color:rgba(90,90,100,.5);}
+/* The Facebook top bar is white, so the outline needs a darker ink there. */
+.fb .brand:empty{border-color:rgba(80,80,95,.6);}
+.fb .brand:empty::after{color:rgba(80,80,95,.9);}
 
 /* Long account names — "Tallinna Tehnikakõrgkooli kammerkoor" — would otherwise
    shove the top-bar icons off the screen. All three apps truncate here, so
