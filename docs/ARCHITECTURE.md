@@ -83,6 +83,12 @@ Characters outside the bundled set fall back to the system font. The set covers 
 Polish, Czech/Slovak, Hungarian, Turkish, Romanian and Croatian — widen `EXTRA` in the
 build script if you need more.
 
+The cover photo is draggable vertically (`js/cover.js`). Because it is sized to fill the
+width there is never horizontal slack, so only the vertical crop is a choice — which is
+what Facebook lets you drag too. The offset is stored in real pixels next to the image in
+the account's media record, so it reloads, travels in a preset and reaches the export.
+Pointer travel is divided by the stage scale, since the stage is CSS-scaled for viewing.
+
 ## Presets
 
 Accounts are data, not code. `js/presets.js` merges four sources — an inline demo, the

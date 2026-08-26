@@ -6,6 +6,8 @@
  * pointing at anything else would come out blank.
  */
 
+import { rememberAspect, clearOffset } from './cover.js';
+
 const ACCEPTED = /^(image|video)\//;
 
 function element(url, isVideo) {
@@ -45,6 +47,10 @@ async function loadInto(el, file) {
   } else {
     el.style.backgroundImage = `url(${url})`;
     el.classList.remove('empty');
+    if (el.hasAttribute('data-reposition')) {
+      clearOffset(el);          // a new picture starts at the top
+      rememberAspect(el);
+    }
   }
 }
 
@@ -74,6 +80,8 @@ export function initMedia({ onChange = () => {}, onError = () => {} } = {}) {
       // Clicking the view count printed over a tile should put the caret in it,
       // not open a file dialog.
       if (ev.target.isContentEditable) return;
+      // A drag to reposition ends in a click; that should not open the picker.
+      if (el.dataset.dragged) { delete el.dataset.dragged; return; }
       target = el;
       picker.value = '';
       picker.click();

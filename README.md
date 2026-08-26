@@ -39,6 +39,8 @@ cost of the layout; a local server is a single command.
 - **Platform logos**: each phone's top bar starts with an empty slot — drop an Instagram,
   Facebook or TikTok logo on it. Colour and layout alone do not tell an audience which
   app they are looking at.
+- **Drag the Facebook cover** up or down to reposition it, the way Facebook does;
+  double-click to put it back at the top. The position saves with the image.
 - **TikTok: one wall image** under More ▾ swaps the nine-cell grid for a single drop
   area — screenshot the whole profile grid and drop it once, instead of sourcing nine
   thumbnails. It fills the width and runs off the bottom edge.

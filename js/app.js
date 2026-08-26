@@ -11,6 +11,7 @@ import * as state from './state.js';
 import { initMedia } from './media.js';
 import { applyLang, DEFAULT_LANG } from './strings.js';
 import { loadLogos, initLogos } from './logos.js';
+import { initReposition } from './cover.js';
 import { loadStyles, probe, renderPhone, download, platformCount } from './export.js';
 
 const body = document.body;
@@ -358,6 +359,10 @@ initMedia({
 /* Logos are global rather than per-account, so they are not part of the preset
  * and survive Clear saved edits. See js/logos.js. */
 initLogos({ onStatus: flash });
+
+/* The Facebook cover can be dragged vertically, the way Facebook lets you
+ * reposition one. The offset is saved with the image. */
+initReposition({ onChange: () => { state.persist(current); flash('cover moved'); } });
 
 /* ───────────────────────── boot ───────────────────────── */
 

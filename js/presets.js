@@ -120,7 +120,11 @@ function validateMedia(media) {
       return rec.t === 'bg'
         ? /^url\(\s*["']?data:/i.test(rec.s)
         : /^data:/i.test(rec.s);
-    }).map(([id, rec]) => [id, { t: rec.t, s: rec.s }])
+    }).map(([id, rec]) => [
+      id,
+      // y is the vertical crop of a repositionable image, in real pixels.
+      Number.isFinite(rec.y) ? { t: rec.t, s: rec.s, y: rec.y } : { t: rec.t, s: rec.s },
+    ])
   );
 }
 

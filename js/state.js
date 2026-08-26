@@ -4,6 +4,8 @@
  * data URL is tens of megabytes and there is nowhere to put it.
  */
 
+import { rememberAspect, setOffset, clearOffset, getOffset } from './cover.js';
+
 export const KEY = 'onscreen-socials-v1';
 
 /* The tool used to key saved media by DOM order: 'm' + index over
@@ -73,6 +75,9 @@ export function capture(key) {
       if (kid) media[id] = { t: kid.tagName === 'VIDEO' ? 'v' : 'i', s: kid.getAttribute('src') };
     } else if (el.style.backgroundImage) {
       media[id] = { t: 'bg', s: el.style.backgroundImage };
+      // Where a repositionable image has been dragged to.
+      const y = getOffset(el);
+      if (y) media[id].y = y;
     }
   }
 
@@ -122,9 +127,21 @@ export function restore(key, preset) {
     } else if (rec) {
       el.style.backgroundImage = rec.s;
       el.classList.remove('empty');
+      if (el.hasAttribute('data-reposition')) {
+        rememberAspect(el);
+        // setOffset clamps against the image, which is not measured yet on this
+        // tick, so write the stored value straight through and let the next drag
+        // clamp it.
+        clearOffset(el);
+        if (rec.y) {
+          el.dataset.offsetY = String(rec.y);
+          el.style.backgroundPosition = `center ${rec.y}px`;
+        }
+      }
     } else {
       el.style.backgroundImage = '';
       el.classList.add('empty');
+      if (el.hasAttribute('data-reposition')) clearOffset(el);
     }
   }
 }

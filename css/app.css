@@ -342,6 +342,11 @@ input[type=range]{width:88px; accent-color:#3d8a64;}
    the bottom instead.
    These are longhands on purpose: `background-image` is what JS overwrites when
    an image is dropped, so size, position and colour survive it. */
+/* Once there is a picture in it, the cover is draggable rather than clickable —
+   the file picker moves to the empty state only. */
+.fb .cover:not(.empty){cursor:grab;}
+.fb .cover.dragging{cursor:grabbing;}
+
 .fb .cover{
   height:440px; flex:0 0 auto;
   background-color:#1f2f4a;
