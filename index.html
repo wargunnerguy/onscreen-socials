@@ -84,6 +84,10 @@
       <label><input type="checkbox" id="guideChk"> Slot guides</label>
       <hr>
       <label><input type="checkbox" id="markChk"> Prop watermark</label>
+      <label><input type="checkbox" id="logoChk" checked> Platform logos</label>
+      <p class="note">Drop a logo on the slot at the start of each phone&rsquo;s top bar.
+        Supply your own files &mdash; none ship with the tool. They apply to every
+        account and stay in this browser.</p>
       <hr>
       <button class="all" id="wipeBtn">Clear saved edits…</button>
       <p class="note">Discards edits for every account and forgets any preset opened
@@ -109,7 +113,10 @@
         </div>
       </div>
       <div class="topbar">
-        <div class="handle"><span contenteditable data-f="igHandle">yourhandle</span><i data-icon="chevron-down"></i></div>
+        <div class="lead">
+          <div class="brand" data-logo="ig" title="Drop the Instagram logo here"></div>
+          <div class="handle"><span contenteditable data-f="igHandle">yourhandle</span><i data-icon="chevron-down"></i></div>
+        </div>
         <div class="icons"><i data-icon="plus-square"></i><i data-icon="menu"></i></div>
       </div>
       <div class="head">
@@ -170,7 +177,10 @@
         </div>
       </div>
       <div class="topbar">
-        <div class="title" contenteditable data-f="fbTitle">Your Page</div>
+        <div class="lead">
+          <div class="brand" data-logo="fb" title="Drop the Facebook logo here"></div>
+          <div class="title" contenteditable data-f="fbTitle">Your Page</div>
+        </div>
         <div class="icons"><i data-icon="search"></i><i data-icon="more"></i></div>
       </div>
       <div class="cover tile empty" data-img data-mid="fb-cover"></div>
@@ -231,7 +241,10 @@
         </div>
       </div>
       <div class="topbar">
-        <i data-icon="chevron-left"></i>
+        <span class="lead">
+          <i data-icon="chevron-left"></i>
+          <div class="brand" data-logo="tt" title="Drop the TikTok logo here"></div>
+        </span>
         <span class="mid"><span contenteditable data-f="ttTop">yourhandle</span><i data-icon="chevron-down"></i></span>
         <i data-icon="more"></i>
       </div>
@@ -282,6 +295,7 @@
 
 <input type="file" id="picker" accept="image/*,video/*" hidden>
 <input type="file" id="presetPicker" accept="application/json,.json" hidden>
+<input type="file" id="logoPicker" accept="image/*" hidden>
 
 <script type="module" src="js/app.js"></script>
 </body>

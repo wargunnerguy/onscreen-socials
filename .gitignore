@@ -17,3 +17,8 @@ fonts/*
 node_modules/
 .DS_Store
 Thumbs.db
+
+# Platform logos are supplied by the user and never committed.
+logos/
+*-logo.png
+*-logo.svg

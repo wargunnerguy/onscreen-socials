@@ -146,9 +146,12 @@ than deleted, so a bad migration is recoverable.
 
 ## Design decisions worth not undoing
 
-- **No real platform logos.** Colour and layout carry the recognition; generic glyphs
-  everywhere else. This is what keeps the project clear of Meta's and ByteDance's
-  trademark enforcement, along with keeping platform names out of the product name.
+- **No real platform logos ship with the tool.** Colour and layout carry the recognition;
+  generic glyphs everywhere else. This is what keeps the project clear of Meta's and
+  ByteDance's trademark enforcement, along with keeping platform names out of the product
+  name. There is a slot in each top bar for a logo the user supplies, because colour alone
+  does not tell an audience which app they are looking at — but those are browser-local,
+  never part of a preset, and never in the repository. See `js/logos.js`.
 - **The video slot is decorative.** Crop-to-fill, dimmed, bleeding off the bottom edge.
   The profile block is the subject; the post is texture.
 - **Instagram and Facebook use a feed post, not a grid**, so landscape footage sits at its

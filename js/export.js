@@ -139,6 +139,9 @@ export async function renderPhone(idx, { slug, withFrame = true } = {}) {
   // The main document having the font decoded does not load it inside the SVG,
   // but it does mean the bytes are warm and the base64 face resolves promptly.
   await document.fonts.ready;
+  // A data-URI image still decodes asynchronously, and until it does it has no
+  // intrinsic size — a logo dropped a moment ago would lay out at zero width.
+  await Promise.all([...src.querySelectorAll('img')].map((i) => i.decode().catch(() => {})));
 
   const img = await loadImage(`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`);
   // One frame of slack: onload fires when the SVG is parsed, which is not always

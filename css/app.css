@@ -180,6 +180,32 @@ input[type=range]{width:88px; accent-color:#3d8a64;}
 .clean .tt .bio:empty{display:none;}
 .clean .tt .link:has(span[data-f]:empty){display:none;}
 
+/* ── platform logo slot ──
+   No marks ship with the tool; you drop your own. See js/logos.js for why they
+   are global rather than part of an account. Sized off the top bar's own type so
+   the logo sits on the same optical line as the name beside it. */
+.lead{display:flex; align-items:center; gap:22px; min-width:0;}
+
+.brand{
+  flex:0 0 auto; height:1em; cursor:pointer; position:relative;
+  display:flex; align-items:center;
+}
+.brand img{height:100%; width:auto; display:block;}
+
+/* Empty slot: a visible target while editing, gone from the export. */
+.brand:empty{
+  width:1em; border:3px dashed rgba(140,140,150,.55); border-radius:10px;
+}
+.brand:empty::after{
+  content:"+"; position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  color:rgba(140,140,150,.75); font-size:.7em; font-weight:300;
+}
+.clean .brand:empty, .nologo .brand{display:none;}
+
+/* The Facebook top bar is white, so a slot outline needs to be visible on it. */
+.fb .brand:empty{border-color:rgba(90,90,100,.5);}
+
 /* Long account names — "Tallinna Tehnikakõrgkooli kammerkoor" — would otherwise
    shove the top-bar icons off the screen. All three apps truncate here, so
    matching them is both safer and more accurate. */
@@ -300,7 +326,22 @@ input[type=range]{width:88px; accent-color:#3d8a64;}
 .fb .topbar{display:flex; align-items:center; justify-content:space-between; padding:4px 50px 26px;}
 .fb .topbar .title{font-size:52px; font-weight:700;}
 .fb .topbar .icons{font-size:48px; display:flex; gap:34px;}
-.fb .cover{height:440px; flex:0 0 auto; background:linear-gradient(120deg,#3a5a8c,#1f2f4a);}
+/* Cover photo: fill the width, crop the bottom.
+   `cover` would scale until both axes are filled, which on this slot (1206×440,
+   far wider than the 16:9 a cover photo usually is) means trimming the left and
+   right edges — and a cover is composed left-to-right, so the sides are exactly
+   where the subject lives. Anchoring to the top keeps the full width and loses
+   the bottom instead.
+   These are longhands on purpose: `background-image` is what JS overwrites when
+   an image is dropped, so size, position and colour survive it. */
+.fb .cover{
+  height:440px; flex:0 0 auto;
+  background-color:#1f2f4a;
+  background-image:linear-gradient(120deg,#3a5a8c,#1f2f4a);
+  background-size:100% auto;
+  background-position:top center;
+  background-repeat:no-repeat;
+}
 .fb .avwrap{padding:0 50px; margin-top:-118px;}
 .fb .avatar{
   width:250px; height:250px; border-radius:50%; border:9px solid #fff;

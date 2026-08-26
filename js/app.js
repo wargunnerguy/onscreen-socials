@@ -10,6 +10,7 @@ import { loadAll, validate, cache, clearCache, buildDoc } from './presets.js';
 import * as state from './state.js';
 import { initMedia } from './media.js';
 import { applyLang, DEFAULT_LANG } from './strings.js';
+import { loadLogos, initLogos } from './logos.js';
 import { loadStyles, probe, renderPhone, download, platformCount } from './export.js';
 
 const body = document.body;
@@ -225,6 +226,7 @@ toggleClass('guideChk', 'guides');
 toggleClass('bleedChk', 'bleed', true, true);
 toggleClass('ttBig', 'ttbig', false, true);
 toggleClass('markChk', 'watermark');
+toggleClass('logoChk', 'nologo', true);
 
 $('fbDark').addEventListener('change', (e) => {
   $('fbScreen').classList.toggle('dark', e.target.checked);
@@ -329,11 +331,16 @@ initMedia({
   onError: (msg) => alert(msg),
 });
 
+/* Logos are global rather than per-account, so they are not part of the preset
+ * and survive Clear saved edits. See js/logos.js. */
+initLogos({ onStatus: flash });
+
 /* ───────────────────────── boot ───────────────────────── */
 
 async function boot() {
   expandIcons();
   state.load();
+  loadLogos();
 
   const { accounts: found, problems } = await loadAll();
   accounts = found;

@@ -36,6 +36,9 @@ cost of the layout; a local server is a single command.
   Click one to open a file picker instead.
 - **Export** writes a PNG per platform. `All three` does the set.
 - **Save…** writes the accounts back out as a `.json` you can send to someone.
+- **Platform logos**: each phone's top bar starts with an empty slot — drop an Instagram,
+  Facebook or TikTok logo on it. Colour and layout alone do not tell an audience which
+  app they are looking at.
 - **Reset** discards edits for the selected account; **Clear saved edits** under More ▾
   discards everything and forgets any preset opened with Load…
 - **`H`** hides the toolbar for a clean screen capture.
@@ -127,6 +130,20 @@ Text you type is rendered in **Inter**, which is bundled, so exports look identi
 every machine. Emoji are the exception — those come from the operating system's own emoji
 font, so a bio with 🐜 in it will not match between Windows and macOS. If you need
 byte-identical output across machines, avoid emoji in the editable text.
+
+## Logos
+
+The tool ships **no platform logos**. Colour and layout carry the recognition, which keeps
+this project clear of Meta's and ByteDance's trademarks and is why the repository contains
+no marks of theirs.
+
+For an audience that is shown a screen for three seconds, that is not always enough, so
+each top bar has a slot you can drop your own logo file into. Those live in your browser,
+apply to every account, and are deliberately **not** written into preset files — a preset
+gets emailed around and committed, and trademarked artwork should not travel with it.
+
+If you publish the result, the usual rules apply: use the marks to identify the real
+platform, do not restyle them, and do not imply the platform endorsed you.
 
 ## What this is for
 
