@@ -171,6 +171,25 @@ input[type=range]{width:88px; accent-color:#3d8a64;}
 [contenteditable]{outline:none;}
 [contenteditable]:focus{background:rgba(255,220,0,.22); border-radius:5px;}
 
+/* Not every profile fills every line — plenty of accounts have no category and
+   no link in the bio. Empty fields collapse, but only in clean view and in the
+   export: while editing they stay as clickable blank lines, because a field you
+   cannot see is a field you cannot type into. */
+.clean .ig .bio > div:empty,
+.clean .fb .meta span:empty,
+.clean .tt .bio:empty{display:none;}
+.clean .tt .link:has(span[data-f]:empty){display:none;}
+
+/* Long account names — "Tallinna Tehnikakõrgkooli kammerkoor" — would otherwise
+   shove the top-bar icons off the screen. All three apps truncate here, so
+   matching them is both safer and more accurate. */
+.ig .topbar .handle > [contenteditable],
+.fb .topbar .title,
+.tt .topbar .mid > [contenteditable]{
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0;
+}
+.ig .topbar .icons, .fb .topbar .icons{flex:0 0 auto;}
+
 /* ═════════════════════════ icons ═════════════════════════
 
    Every piece of platform chrome is an inline SVG rather than an emoji or a
