@@ -9,6 +9,7 @@ import { expandIcons } from './icons.js';
 import { loadAll, validate, cache, buildDoc } from './presets.js';
 import * as state from './state.js';
 import { initMedia } from './media.js';
+import { applyLang, DEFAULT_LANG } from './strings.js';
 import { loadStyles, probe, renderPhone, download, platformCount } from './export.js';
 
 const body = document.body;
@@ -42,6 +43,14 @@ function showNotice(html) {
 const entity = $('entity');
 
 function presetFor(key) { return accounts[key] ?? {}; }
+
+/* Paint an account, chrome language included. The stats labels and buttons
+ * belong to the phone's interface rather than the account, so they come from
+ * js/strings.js keyed on the preset's "lang". */
+function show(key) {
+  applyLang(accounts[key]?.lang ?? DEFAULT_LANG);
+  state.restore(key, presetFor(key));
+}
 function slugFor(key) { return accounts[key]?.slug ?? 'mockup'; }
 
 function fillAccountList(selected) {
@@ -57,7 +66,7 @@ function fillAccountList(selected) {
 function switchTo(key) {
   if (current) state.persist(current);
   current = key;
-  state.restore(current, presetFor(current));
+  show(current);
 }
 
 entity.addEventListener('change', () => switchTo(entity.value));
@@ -66,7 +75,7 @@ $('resetBtn').addEventListener('click', () => {
   if (!state.hasEdits(current)) { flash('nothing to reset'); return; }
   if (!confirm(`Discard all edits for "${accounts[current].label}"?`)) return;
   state.clearEdits(current);
-  state.restore(current, presetFor(current));
+  show(current);
   state.persist(current);
 });
 
@@ -310,7 +319,7 @@ async function boot() {
 
   current = Object.keys(accounts)[0];
   fillAccountList(current);
-  state.restore(current, presetFor(current));
+  show(current);
 
   applyZoom();
 

@@ -111,9 +111,9 @@
       <div class="head">
         <div class="avatar tile empty" data-img data-mid="ig-avatar"></div>
         <div class="stats">
-          <div><b contenteditable data-f="igPosts">210</b><span>posts</span></div>
-          <div><b contenteditable data-f="igFollowers">1527</b><span>followers</span></div>
-          <div><b contenteditable data-f="igFollowing">158</b><span>following</span></div>
+          <div><b contenteditable data-f="igPosts">210</b><span data-ui="ig.posts">posts</span></div>
+          <div><b contenteditable data-f="igFollowers">1527</b><span data-ui="ig.followers">followers</span></div>
+          <div><b contenteditable data-f="igFollowing">158</b><span data-ui="ig.following">following</span></div>
         </div>
       </div>
       <div class="bio">
@@ -123,8 +123,8 @@
         <div class="link" contenteditable data-f="igLink">example.com</div>
       </div>
       <div class="btns">
-        <div>Follow</div>
-        <div class="alt">Message</div>
+        <div data-ui="follow">Follow</div>
+        <div class="alt" data-ui="message">Message</div>
         <div class="alt sq"><i data-icon="chevron-down"></i></div>
       </div>
       <div class="prow">
@@ -177,11 +177,11 @@
         <span contenteditable data-f="fbMeta2">1,204 followers</span>
       </div>
       <div class="btns">
-        <div><i data-icon="plus"></i> Follow</div>
-        <div class="alt">Message</div>
+        <div><i data-icon="plus"></i> <span data-ui="follow">Follow</span></div>
+        <div class="alt" data-ui="message">Message</div>
         <div class="alt" style="flex:0 0 120px"><i data-icon="more"></i></div>
       </div>
-      <div class="ptabs"><div class="on">Posts</div><div>About</div><div>Photos</div><div>More</div></div>
+      <div class="ptabs"><div class="on" data-ui="fb.posts">Posts</div><div data-ui="fb.about">About</div><div data-ui="fb.photos">Photos</div><div data-ui="fb.more">More</div></div>
       <div class="divider"></div>
       <div class="prow">
         <div class="pav tile empty" data-img data-mid="fb-post-avatar"></div>
@@ -206,9 +206,9 @@
         <span contenteditable data-f="fbReact2">4 comments</span>
       </div>
       <div class="pbar">
-        <div><i data-icon="thumb-up"></i> Like</div>
-        <div><i data-icon="comment"></i> Comment</div>
-        <div><i data-icon="share"></i> Share</div>
+        <div><i data-icon="thumb-up"></i> <span data-ui="fb.like">Like</span></div>
+        <div><i data-icon="comment"></i> <span data-ui="fb.comment">Comment</span></div>
+        <div><i data-icon="share"></i> <span data-ui="fb.share">Share</span></div>
       </div>
     </div>
   </div>
@@ -234,12 +234,12 @@
       <div class="avatar tile empty" data-img data-mid="tt-avatar"></div>
       <div class="handle" contenteditable data-f="ttHandle">@yourhandle</div>
       <div class="stats">
-        <div><b contenteditable data-f="ttFollowing">73</b><span>Following</span></div>
-        <div><b contenteditable data-f="ttFollowers">2841</b><span>Followers</span></div>
-        <div><b contenteditable data-f="ttLikes">19.4K</b><span>Likes</span></div>
+        <div><b contenteditable data-f="ttFollowing">73</b><span data-ui="tt.following">Following</span></div>
+        <div><b contenteditable data-f="ttFollowers">2841</b><span data-ui="tt.followers">Followers</span></div>
+        <div><b contenteditable data-f="ttLikes">19.4K</b><span data-ui="tt.likes">Likes</span></div>
       </div>
       <div class="btns">
-        <div class="follow">Follow</div>
+        <div class="follow" data-ui="follow">Follow</div>
         <div class="alt"><i data-icon="mail"></i></div>
         <div class="alt"><i data-icon="chevron-down"></i></div>
       </div>
@@ -255,7 +255,7 @@
           <div class="layer fill"></div><div class="layer main"></div>
           <div class="ph"><b>+</b><span>VIDEO</span></div>
           <div class="scrim"></div>
-          <span class="pin">Pinned</span>
+          <span class="pin" data-ui="tt.pinned">Pinned</span>
           <span class="views"><i data-icon="play-solid"></i><span contenteditable data-f="ttViews0">44.1K</span></span>
           <div class="guide"><span></span></div>
         </div>

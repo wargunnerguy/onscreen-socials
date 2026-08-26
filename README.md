@@ -79,6 +79,11 @@ Every key under `fields` matches a `data-f` attribute in `index.html`. Anything 
 out falls back to the markup default and anything unrecognised is ignored, so a partial
 file is fine. `slug` names the exported PNGs.
 
+`lang` is optional and sets the language of the phone's own interface — the stats
+labels, buttons and tab rows (`"et"` or `"en"`, default English). Bios, captions and
+follower counts are account data and stay in `fields`; only the words the platforms
+themselves render come from `lang`. Add a language by extending `js/strings.js`.
+
 `media` is optional and holds avatars and covers, keyed by the `data-mid` attributes in
 `index.html` (`ig-avatar`, `fb-cover`, `tt-cell-3`, …). Images are embedded as data URLs
 so a preset is one self-contained file. Only `data:` URLs are accepted when loading — a

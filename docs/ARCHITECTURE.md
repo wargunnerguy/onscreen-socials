@@ -105,6 +105,12 @@ harmless, but the browser logs a 404 regardless, and a public site should not ha
 visitor a console error. On a deployment the Load… button is the way in, and it caches
 what it loads.
 
+Chrome language lives in `js/strings.js`, not the presets. The stats labels, buttons
+and tab rows belong to the phone's interface rather than to the account — a viewer in
+Tallinn sees "jälgijat", not "followers" — so they are marked `data-ui="key"` in the
+markup and filled in per account from the preset's `lang`. Account data (bios, counts,
+post text) stays in `fields`; only words the platforms themselves render are translated.
+
 ## State
 
 Per-account edits persist to `localStorage` under `onscreen-socials-v1`. Text and images

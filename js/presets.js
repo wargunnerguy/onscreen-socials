@@ -90,6 +90,8 @@ export function validate(doc, source) {
         Object.entries(acc.fields).map(([k, v]) => [k, String(v)])
       ),
       media: validateMedia(acc.media),
+      // Chrome language for this account; unknown values fall back in applyLang.
+      lang: typeof acc.lang === 'string' ? acc.lang : undefined,
     };
   }
   return out;
@@ -140,6 +142,7 @@ export function buildDoc(accounts, keys, merge, { includeMedia = true, name = ''
 
     const { fields, media } = merge(key, acc);
     const entry = { label: acc.label, slug: acc.slug, fields };
+    if (acc.lang) entry.lang = acc.lang;
 
     if (includeMedia) {
       const keep = {};
