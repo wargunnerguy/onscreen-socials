@@ -74,23 +74,32 @@ export function capture(key) {
 }
 
 /**
- * Paint account `key` into the DOM.
+ * What account `key` should currently look like: the preset with this browser's
+ * edits layered over it.
  *
- * `defaults` is the preset. Saved fields are layered *over* the defaults rather
- * than replacing them: a saved blob written before some field existed would
- * otherwise leave that element untouched, showing whatever the previously
- * selected account had left in it.
+ * Edits are layered *over* the preset rather than replacing it. A saved blob
+ * written before some field existed would otherwise leave that element
+ * untouched, showing whatever the previously selected account had left in it.
+ * Media works the same way, so a preset can ship avatars and the user can
+ * replace individual ones without losing the rest.
  */
-export function restore(key, defaults) {
+export function merged(key, preset = {}) {
   const saved = STATE[key];
-  const fields = { ...defaults, ...saved?.fields };
+  return {
+    fields: { ...preset.fields, ...saved?.fields },
+    media: { ...preset.media, ...saved?.media },
+  };
+}
+
+/** Paint account `key` into the DOM. */
+export function restore(key, preset) {
+  const { fields, media } = merged(key, preset);
 
   for (const el of document.querySelectorAll('[data-f]')) {
     const v = fields[el.dataset.f];
     if (v !== undefined) el.innerHTML = v;
   }
 
-  const media = saved?.media ?? {};
   for (const el of mediaEls()) {
     const rec = media[el.dataset.mid];
     if (el.hasAttribute('data-slot')) {

@@ -90,6 +90,16 @@ files listed in `presets/index.json`, `presets/local.json`, and whatever the use
 by hand — with later sources winning on a key clash. The inline demo exists so the app
 still works when every fetch fails.
 
+Presets are also the *output* format: `buildDoc()` writes accounts back out with the
+browser's edits merged in, which is what the Save… panel downloads. Load and save are the
+same shape, so a file can make a full round trip.
+
+Preset `media` carries avatars and covers as data URLs, keyed by `data-mid`. `validateMedia()`
+accepts nothing but `data:` URLs: these files are meant to be passed between people, and a
+preset that pointed at a remote image would turn opening it into a callback to whoever
+wrote it. Video is never written out — it is session-only everywhere else, and a few
+seconds of 1080p would dwarf the rest of the file.
+
 `presets/local.json` is only probed when `location.hostname` is local. The fetch failing is
 harmless, but the browser logs a 404 regardless, and a public site should not hand every
 visitor a console error. On a deployment the Load… button is the way in, and it caches

@@ -6,7 +6,7 @@
  */
 
 import { expandIcons } from './icons.js';
-import { loadAll, validate, cache } from './presets.js';
+import { loadAll, validate, cache, buildDoc } from './presets.js';
 import * as state from './state.js';
 import { initMedia } from './media.js';
 import { loadStyles, probe, renderPhone, download, platformCount } from './export.js';
@@ -41,7 +41,7 @@ function showNotice(html) {
 
 const entity = $('entity');
 
-function fieldsFor(key) { return accounts[key]?.fields ?? {}; }
+function presetFor(key) { return accounts[key] ?? {}; }
 function slugFor(key) { return accounts[key]?.slug ?? 'mockup'; }
 
 function fillAccountList(selected) {
@@ -57,7 +57,7 @@ function fillAccountList(selected) {
 function switchTo(key) {
   if (current) state.persist(current);
   current = key;
-  state.restore(current, fieldsFor(current));
+  state.restore(current, presetFor(current));
 }
 
 entity.addEventListener('change', () => switchTo(entity.value));
@@ -66,7 +66,7 @@ $('resetBtn').addEventListener('click', () => {
   if (!state.hasEdits(current)) { flash('nothing to reset'); return; }
   if (!confirm(`Discard all edits for "${accounts[current].label}"?`)) return;
   state.clearEdits(current);
-  state.restore(current, fieldsFor(current));
+  state.restore(current, presetFor(current));
   state.persist(current);
 });
 
@@ -90,6 +90,54 @@ presetPicker.addEventListener('change', async () => {
   } catch (err) {
     alert(`Could not load ${file.name}\n\n${err.message}`);
   }
+});
+
+/* Write accounts back out to a preset file — the counterpart to Load…, and the
+ * way a set of accounts gets sent to someone else. What is written is what is on
+ * screen: this browser's edits layered over whatever preset they came from. */
+const saveScope = $('saveScope');
+const saveMedia = $('saveMedia');
+const saveSize = $('saveSize');
+const savePanel = document.querySelector('.more.save');
+
+function currentDoc() {
+  state.capture(current);
+  const keys = saveScope.value === 'one' ? [current] : Object.keys(accounts);
+  return buildDoc(accounts, keys, state.merged, {
+    includeMedia: saveMedia.checked,
+    name: saveScope.value === 'one' ? accounts[current]?.label : 'Onscreen Socials accounts',
+  });
+}
+
+function describeSize() {
+  const { doc, videos } = currentDoc();
+  const json = JSON.stringify(doc);
+  const n = Object.keys(doc.accounts).length;
+  const mb = json.length / 1_048_576;
+  const size = mb >= 1 ? `${mb.toFixed(1)} MB` : `${Math.max(1, Math.round(json.length / 1024))} KB`;
+
+  const notes = [`${n} account${n === 1 ? '' : 's'} · ${size}`];
+  if (videos) notes.push(`${videos} video${videos === 1 ? '' : 's'} left out — video is session-only.`);
+  // Anything past a few MB is awkward to email and slow to load back.
+  saveSize.classList.toggle('warn', mb > 5 || videos > 0);
+  if (mb > 5) notes.push('Large. Untick images to make it small enough to send.');
+
+  saveSize.textContent = notes.join(' ');
+}
+
+savePanel.addEventListener('toggle', () => { if (savePanel.open) describeSize(); });
+saveScope.addEventListener('change', describeSize);
+saveMedia.addEventListener('change', describeSize);
+
+$('saveGo').addEventListener('click', () => {
+  const { doc } = currentDoc();
+  const name = saveScope.value === 'one'
+    ? `onscreen-socials-${slugFor(current)}.json`
+    : 'onscreen-socials-accounts.json';
+
+  download(new Blob([JSON.stringify(doc, null, 2)], { type: 'application/json' }), name);
+  savePanel.open = false;
+  flash(`saved ${name}`);
 });
 
 /* ───────────────────────── saving ───────────────────────── */
@@ -262,7 +310,7 @@ async function boot() {
 
   current = Object.keys(accounts)[0];
   fillAccountList(current);
-  state.restore(current, fieldsFor(current));
+  state.restore(current, presetFor(current));
 
   applyZoom();
 

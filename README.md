@@ -35,6 +35,7 @@ cost of the layout; a local server is a single command.
 - **Drop an image or a video** on an avatar, a cover, a TikTok tile or a video slot.
   Click one to open a file picker instead.
 - **Export** writes a PNG per platform. `All three` does the set.
+- **Save…** writes the accounts back out as a `.json` you can send to someone.
 - **`H`** hides the toolbar for a clean screen capture.
 - **More ▾** holds the fiddly controls: Facebook dark mode, TikTok big tile, bleed, dim,
   slot guides, and the prop watermark.
@@ -67,7 +68,8 @@ Accounts live in `presets/*.json`, not in the code:
     "cafe": {
       "label": "Kohvik Null",
       "slug": "kohvik-null",
-      "fields": { "igHandle": "kohviknull", "igFollowers": "6,241" }
+      "fields": { "igHandle": "kohviknull", "igFollowers": "6,241" },
+      "media":  { "ig-avatar": { "t": "bg", "s": "url(data:image/png;base64,…)" } }
     }
   }
 }
@@ -77,9 +79,24 @@ Every key under `fields` matches a `data-f` attribute in `index.html`. Anything 
 out falls back to the markup default and anything unrecognised is ignored, so a partial
 file is fine. `slug` names the exported PNGs.
 
-`presets/example.json` is a worked example. To add your own, either put the file next to
-it and list it in `presets/index.json`, or press **Load…** and pick it — a hand-loaded
-preset is remembered in the browser, which is how you get private accounts onto a
+`media` is optional and holds avatars and covers, keyed by the `data-mid` attributes in
+`index.html` (`ig-avatar`, `fb-cover`, `tt-cell-3`, …). Images are embedded as data URLs
+so a preset is one self-contained file. Only `data:` URLs are accepted when loading — a
+preset that pointed at a remote image would phone home the moment someone opened it.
+
+**You do not have to write these by hand.** Set the accounts up in the editor, then
+**Save…** → *All accounts* or *This one only*. The file that comes out is what is on
+screen — your edits, not the preset they started from — and the panel shows how big it
+will be before you download it. Images are included by default; untick that if you need
+the file small enough to email. Videos are always left out, because they are session-only
+everywhere else in the tool.
+
+That file is the unit of sharing: hand it to someone, they press **Load…**, and they have
+your accounts, avatars and all.
+
+`presets/example.json` is a worked example. To add your own permanently, put the file next
+to it and list it in `presets/index.json`; otherwise **Load…** is enough — a hand-loaded
+preset is remembered in that browser, which is how you get private accounts onto a
 deployed copy without committing them.
 
 `presets/local.json` is gitignored and loaded automatically **when you are running the

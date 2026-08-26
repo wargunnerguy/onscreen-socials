@@ -89,9 +89,73 @@ export function validate(doc, source) {
       fields: Object.fromEntries(
         Object.entries(acc.fields).map(([k, v]) => [k, String(v)])
       ),
+      media: validateMedia(acc.media),
     };
   }
   return out;
+}
+
+/**
+ * Optional per-account images, keyed by the data-mid names in index.html.
+ *
+ * These files get emailed between people, so only data: URLs are accepted.
+ * Nothing else has any business being here, and refusing the rest keeps a
+ * preset from pointing the page at a URL that would phone home when opened.
+ */
+function validateMedia(media) {
+  if (!media || typeof media !== 'object') return {};
+
+  return Object.fromEntries(
+    Object.entries(media).filter(([, rec]) => {
+      if (!rec || typeof rec.s !== 'string') return false;
+      if (!['bg', 'i', 'v'].includes(rec.t)) return false;
+      // 'bg' arrives as the CSS value url("data:…"); the others are bare URLs.
+      return rec.t === 'bg'
+        ? /^url\(\s*["']?data:/i.test(rec.s)
+        : /^data:/i.test(rec.s);
+    }).map(([id, rec]) => [id, { t: rec.t, s: rec.s }])
+  );
+}
+
+/**
+ * Build a preset document for download — the counterpart to loading one.
+ *
+ * `merge` is state.merged: it layers this browser's edits over the preset, so
+ * what gets written out is what is on screen, not what was originally loaded.
+ * Returns the document plus a count of videos left out, which the caller should
+ * mention rather than dropping silently.
+ */
+export function buildDoc(accounts, keys, merge, { includeMedia = true, name = '' } = {}) {
+  const doc = {
+    version: 1,
+    name: name || 'Onscreen Socials accounts',
+    generated: new Date().toISOString().slice(0, 10),
+    accounts: {},
+  };
+  let videos = 0;
+
+  for (const key of keys) {
+    const acc = accounts[key];
+    if (!acc) continue;
+
+    const { fields, media } = merge(key, acc);
+    const entry = { label: acc.label, slug: acc.slug, fields };
+
+    if (includeMedia) {
+      const keep = {};
+      for (const [id, rec] of Object.entries(media)) {
+        // Video is session-only everywhere else, and a few seconds of 1080p as
+        // a data URL would dwarf the rest of the file.
+        if (rec.t === 'v') { videos++; continue; }
+        keep[id] = rec;
+      }
+      if (Object.keys(keep).length) entry.media = keep;
+    }
+
+    doc.accounts[key] = entry;
+  }
+
+  return { doc, videos };
 }
 
 async function fetchJson(url) {
