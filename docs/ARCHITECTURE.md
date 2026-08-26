@@ -130,9 +130,17 @@ post text) stays in `fields`; only words the platforms themselves render are tra
 
 ## State
 
-Per-account edits persist to `localStorage` under `onscreen-socials-v1`. Text and images
-survive a reload; videos do not, because a few seconds of 1080p as a data URL is tens of
-megabytes.
+Text persists to `localStorage` under `onscreen-socials-v1`; images go to IndexedDB
+through `js/store.js`. They shared localStorage originally, which gives the whole origin
+about 5 MB and capped each image at 900 KB — a cover photo or a screenshot of a TikTok
+grid is past both, so they were silently dropped and the work appeared to vanish on
+reload. Both stores are migrated forward on first load.
+
+Values stay data URLs rather than Blobs even in IndexedDB, because the export renders
+through an SVG `<foreignObject>` that cannot fetch a `blob:` URL.
+
+Videos are still session-only: a few seconds of 1080p as a data URL dwarfs everything else
+and would make every save crawl.
 
 **Media is keyed by explicit `data-mid` names**, not by DOM order. It used to be `'m' +
 index` over `querySelectorAll('[data-img],[data-slot]')`, which meant any markup change

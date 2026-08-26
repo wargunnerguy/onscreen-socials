@@ -166,9 +166,7 @@ $('wipeBtn').addEventListener('click', () => {
   // The reload below fires beforeunload, which would otherwise persist the
   // still-displayed account straight back into the storage just emptied.
   wiping = true;
-  state.clearAll();
-  clearCache();
-  location.reload();
+  Promise.all([state.clearAll(), clearCache()]).then(() => location.reload());
 });
 
 /* ───────────────────────── saving ───────────────────────── */
@@ -238,9 +236,12 @@ const toggleClass = (id, cls, invert = false, settle = false) => {
 toggleClass('frameChk', 'noframe', true);
 toggleClass('statusChk', 'nostatus', true);
 toggleClass('guideChk', 'guides');
-toggleClass('bleedChk', 'bleed', true, true);
+// Ticked means bleed ON, matching the body class the markup ships with.
+// This was inverted, which only showed once controls were synced at boot.
+toggleClass('bleedChk', 'bleed', false, true);
 toggleClass('ttBig', 'ttbig', false, true);
 toggleClass('ttWall', 'ttwall', false, true);
+toggleClass('bigVid', 'bigvideo', false, true);
 toggleClass('markChk', 'watermark');
 toggleClass('logoChk', 'nologo', true);
 
@@ -368,7 +369,7 @@ initReposition({ onChange: () => { state.persist(current); flash('cover moved');
 
 async function boot() {
   expandIcons();
-  state.load();
+  await state.load();
   loadLogos();
 
   const { accounts: found, problems } = await loadAll();

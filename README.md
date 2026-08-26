@@ -31,7 +31,9 @@ cost of the layout; a local server is a single command.
 
 ## Use it
 
-- **Click any text** to edit it. Changes save as you type.
+- **Click any text** to edit it. Changes save as you type. Text is kept in localStorage
+  and images in IndexedDB, so large covers and screenshots survive a reload; videos are
+  session-only.
 - **Drop an image or a video** on an avatar, a cover, a TikTok tile or a video slot.
   Click one to open a file picker instead.
 - **Export** writes a PNG per platform. `All three` does the set.
@@ -41,6 +43,9 @@ cost of the layout; a local server is a single command.
   app they are looking at.
 - **Drag the Facebook cover** up or down to reposition it, the way Facebook does;
   double-click to put it back at the top. The position saves with the image.
+- **One big video (all platforms)** under More ▾ turns the post into a single full
+  portrait video on each phone. With Bleed on it runs off the bottom edge; with Bleed off
+  it fits the space left.
 - **TikTok: one wall image** under More ▾ swaps the nine-cell grid for a single drop
   area — screenshot the whole profile grid and drop it once, instead of sourcing nine
   thumbnails. It fills the width and runs off the bottom edge.

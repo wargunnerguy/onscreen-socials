@@ -1,10 +1,16 @@
-/* Per-account edits: capture from the DOM, restore into it, persist to localStorage.
+/* Per-account edits: capture from the DOM, restore into it, persist.
  *
- * Text and images survive a reload. Videos do not — a few seconds of 1080p as a
- * data URL is tens of megabytes and there is nowhere to put it.
+ * Text goes to localStorage; images go to IndexedDB via js/store.js. They used
+ * to share localStorage, which gives the whole origin ~5 MB and made anything
+ * over 900 KB unsavable — a cover photo or a screenshot of a TikTok grid is past
+ * both, so those quietly vanished on reload.
+ *
+ * Videos are still session-only. A few seconds of 1080p as a data URL dwarfs
+ * everything else and would make every save crawl.
  */
 
-import { rememberAspect, setOffset, clearOffset, getOffset } from './cover.js';
+import { rememberAspect, clearOffset, getOffset } from './cover.js';
+import * as store from './store.js';
 
 export const KEY = 'onscreen-socials-v1';
 
@@ -23,9 +29,9 @@ const LEGACY_MIDS = [
   'tt-cell-5', 'tt-cell-6', 'tt-cell-7', 'tt-cell-8',
 ];
 
-/* Anything larger than this is kept in the session but left out of localStorage;
- * the whole origin only gets ~5 MB. */
-const MAX_STORED_IMAGE = 900_000;
+/* Text lives in localStorage under KEY; pictures live in IndexedDB under this
+ * one, which has room for them. See js/store.js. */
+const MEDIA_KEY = 'media';
 
 let STATE = {};
 let canStore = true;
@@ -41,6 +47,7 @@ export function clearEdits(key) { delete STATE[key]; }
 export function clearAll() {
   STATE = {};
   try { localStorage.removeItem(KEY); } catch { /* nothing to remove */ }
+  return store.del(MEDIA_KEY);
 }
 
 /* ───────────────────────── DOM ↔ state ───────────────────────── */
@@ -148,51 +155,55 @@ export function restore(key, preset) {
 
 /* ───────────────────────── persistence ───────────────────────── */
 
-/** Strip what localStorage cannot hold. Returns [payload, skippedCount]. */
-function serialisable(includeMedia) {
-  const out = {};
-  let skipped = 0;
+/** Text only — small, and localStorage is a fine home for it. */
+function fieldsOnly() {
+  return Object.fromEntries(
+    Object.entries(STATE).map(([key, entry]) => [key, { fields: entry.fields }])
+  );
+}
 
+/** Pictures, for IndexedDB. Videos stay session-only: a few seconds of 1080p as
+ *  a data URL dwarfs everything else and would make every save crawl. */
+function mediaOnly() {
+  const out = {};
+  let videos = 0;
   for (const [key, entry] of Object.entries(STATE)) {
     const media = {};
-    if (includeMedia) {
-      for (const [id, rec] of Object.entries(entry.media)) {
-        // Videos are session-only by design; oversized stills are dropped so one
-        // big drag-and-drop cannot cost the user all their typing.
-        if (rec.t === 'v') continue;
-        if (rec.s.length > MAX_STORED_IMAGE) { skipped++; continue; }
-        media[id] = rec;
-      }
+    for (const [id, rec] of Object.entries(entry.media)) {
+      if (rec.t === 'v') { videos++; continue; }
+      media[id] = rec;
     }
-    out[key] = { fields: entry.fields, media };
+    if (Object.keys(media).length) out[key] = media;
   }
-  return [out, skipped];
+  return [out, videos];
 }
+
+let mediaWrite = null;
 
 export function persist(key) {
   capture(key);
   if (!canStore) return;
 
-  const [full, skipped] = serialisable(true);
   try {
-    localStorage.setItem(KEY, JSON.stringify(full));
-    onStatus(skipped ? `saved · ${skipped} image${skipped > 1 ? 's' : ''} too large` : 'saved');
-    return;
-  } catch { /* over quota — fall through */ }
-
-  // Text is the part worth keeping, so drop the images and try again rather
-  // than giving up on saving altogether.
-  try {
-    localStorage.setItem(KEY, JSON.stringify(serialisable(false)[0]));
-    onStatus('saved — text only, images did not fit');
+    localStorage.setItem(KEY, JSON.stringify(fieldsOnly()));
   } catch {
     canStore = false;
-    onStatus('not saved');
+    onStatus('text not saved');
+    return;
   }
+
+  // Images go to IndexedDB, which has room for them. The write is async and
+  // coalesced: a burst of edits should not queue up a dozen full rewrites.
+  const [media] = mediaOnly();
+  const write = store.set(MEDIA_KEY, media).then((ok) => {
+    if (write !== mediaWrite) return;          // superseded by a later save
+    onStatus(ok ? 'saved' : 'saved — images did not fit');
+  });
+  mediaWrite = write;
 }
 
 /** Read saved edits, migrating the pre-rename key if that is all there is. */
-export function load() {
+export async function load() {
   try {
     const probe = `${KEY}-probe`;
     localStorage.setItem(probe, '1');
@@ -206,6 +217,26 @@ export function load() {
   const raw = localStorage.getItem(KEY);
   if (raw) {
     try { STATE = JSON.parse(raw); } catch { STATE = {}; }
+    // Older saves kept images in localStorage too. Anything still there is
+    // carried across; from now on pictures live in IndexedDB.
+    const stranded = {};
+    for (const [key, entry] of Object.entries(STATE)) {
+      if (entry.media && Object.keys(entry.media).length) stranded[key] = entry.media;
+      entry.media = entry.media ?? {};
+    }
+
+    const stored = (await store.get(MEDIA_KEY)) ?? {};
+    for (const [key, media] of Object.entries(stored)) {
+      STATE[key] = STATE[key] ?? { fields: {}, media: {} };
+      // Anything stranded in localStorage was written more recently than the
+      // migration, so let it win on a clash.
+      STATE[key].media = { ...media, ...STATE[key].media };
+    }
+
+    if (Object.keys(stranded).length) {
+      await store.set(MEDIA_KEY, mediaOnly()[0]);
+      try { localStorage.setItem(KEY, JSON.stringify(fieldsOnly())); } catch { /* fine */ }
+    }
     return;
   }
 
@@ -222,6 +253,7 @@ export function load() {
       }
       STATE[key] = { fields: entry.fields ?? {}, media };
     }
+    await store.set(MEDIA_KEY, mediaOnly()[0]);
     // The old key is left in place rather than removed: if this migration got
     // something wrong, the original is still there to go back to.
     onStatus('imported earlier edits');

@@ -486,6 +486,27 @@ input[type=range]{width:88px; accent-color:#3d8a64;}
 }
 .ttwall .tt .grid{display:none;}
 .ttwall .tt .wall{display:block;}
+
+/* ── one big video, on any platform ──
+   Instead of a fixed ratio the slot takes whatever height is left on the screen,
+   so the post reads as a single large video rather than a thumbnail. The chrome
+   below it (likes, caption, action bar) stays put — flex:1 grows the slot into
+   the leftover space rather than pushing its siblings off the bottom.
+
+   Prefixed with `body` so these outrank the .ttwall rules above: with both on,
+   one big video is the more specific request. */
+body.bigvideo .vslot[data-ratio]{aspect-ratio:auto; flex:1 1 auto; min-height:0;}
+
+/* With Bleed on as well it goes full portrait and runs off the bottom, which is
+   what Bleed is for. Filling only the space that happens to be left would make
+   the Instagram and Facebook slots *smaller* than the 4:5 they already get —
+   a poor showing for a control called "one big video". */
+body.bigvideo.bleed .vslot[data-ratio]{aspect-ratio:9/16; flex:0 0 auto;}
+
+body.bigvideo .tt .grid{display:block; flex:1 1 auto; min-height:0; gap:0;}
+body.bigvideo .tt .grid .cell{display:none;}
+body.bigvideo .tt .grid .vslot{aspect-ratio:auto; width:100%; height:100%;}
+body.bigvideo .tt .wall{display:none;}
 .tt .views{
   position:absolute; left:16px; bottom:14px; z-index:75; font-size:30px; font-weight:600;
   text-shadow:0 2px 8px rgba(0,0,0,.85); display:flex; align-items:center; gap:8px;
