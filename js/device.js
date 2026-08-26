@@ -17,8 +17,6 @@
  * thing anyone has to get right.
  */
 
-import { isLocal } from './env.js';
-
 const FILES = { frame: 'assets/device-frame.png', mask: 'assets/device-mask.png' };
 
 let device = null;          // { frame, mask, box } once both images are in
@@ -67,10 +65,8 @@ function opaqueBounds(mask) {
  * files are simply not there, and throws only if they are there and unusable.
  */
 export async function loadDevice(files = FILES) {
-  // assets/ is gitignored, so on a deployed site there is nothing to find and
-  // asking would only litter the console. See js/env.js.
-  if (files === FILES && !isLocal()) return null;
-
+  // Unlike the logos, these two are committed and published, so they are looked
+  // for everywhere rather than only on a local copy.
   let frame;
   let mask;
   try {
@@ -107,7 +103,21 @@ export function composite(screenImage) {
   canvas.height = frame.height;
   const ctx = canvas.getContext('2d');
 
-  ctx.drawImage(screenImage, box.x, box.y, box.width, box.height);
+  /* Scale to cover the aperture rather than stretch to it. A mask traced off a
+   * real render rarely matches the panel exactly — the supplied iPhone 17 gives
+   * an aperture of 1208×2666 against a 1206×2622 screen, which stretched into it
+   * would be 1.7% too tall. Covering keeps the proportions and lets the mask
+   * clip the couple of stray pixels, which nobody will ever find. */
+  const scale = Math.max(box.width / screenImage.width, box.height / screenImage.height);
+  const drawW = screenImage.width * scale;
+  const drawH = screenImage.height * scale;
+  ctx.drawImage(
+    screenImage,
+    box.x + (box.width - drawW) / 2,
+    box.y + (box.height - drawH) / 2,
+    drawW,
+    drawH,
+  );
   // Keep only what the mask says is screen. Everything outside becomes
   // transparent, which is what leaves the corners clean.
   ctx.globalCompositeOperation = 'destination-in';

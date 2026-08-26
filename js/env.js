@@ -1,7 +1,7 @@
 /* Where is this copy running?
  *
- * Several things are loaded from files that are gitignored and therefore never
- * published: presets/local.json, and the logos and device frame in assets/.
+ * Some files are gitignored and therefore never published: presets/local.json and
+ * the logos in assets/. The device frame is committed, so it is not gated.
  * Probing for them on a deployed site is harmless but hands every visitor a
  * handful of 404s in the console, which is untidy on a public page.
  *

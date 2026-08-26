@@ -7,6 +7,9 @@ HANDOFF.md
 # Working folders. Kept in the tree, contents ignored.
 assets/*
 !assets/.gitkeep
+# The device frame ships with the site; the logos do not.
+!assets/device-frame.png
+!assets/device-mask.png
 exports/*
 !exports/.gitkeep
 

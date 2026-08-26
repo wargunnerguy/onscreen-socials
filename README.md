@@ -173,13 +173,14 @@ The folder is gitignored, so nothing here is published or committed.
 | File | What it is |
 |---|---|
 | `logo-instagram.png` `logo-facebook.png` `logo-tiktok.png` | the three top-bar logos |
-| `device-frame.png` | a photograph of the handset with the screen area transparent |
-| `device-mask.png` | white where the screen shows through, transparent elsewhere, same size as the frame |
+| `device-frame.png` | **ships with the site** — an iPhone 17 with the screen area transparent |
+| `device-mask.png` | **ships with the site** — white where the screen shows through, same size |
 
 Logos from `assets/` are **defaults** — dropping one on a slot in the page overrides it for
 that browser.
 
-With a frame and mask present, an extra **real device** box appears next to Export. Ticked,
+An iPhone 17 frame and mask are included, so **real device** next to Export works out of
+the box. Replace the two files to use a different handset. Ticked,
 the screen is rendered bare and composited into the frame: scaled into the aperture, clipped
 by the mask so the corners and the island come out exactly as the mask draws them, and the
 frame painted over the top. The PNG comes out at the frame's own size with everything
@@ -189,8 +190,12 @@ Where the screen sits is read from the mask — the bounding box of its opaque p
 any device at any resolution works with no coordinates to enter. The two files only have to
 be the same pixel dimensions; if they are not, the page says so.
 
-`assets/` is only looked at when the site is served locally, since the folder is never
-published. On a deployed copy, drop logos onto the slots instead.
+The screen is scaled to *cover* that aperture, not stretched to it. A mask traced off a
+render rarely matches the panel exactly — the bundled one is 1208×2666 against a 1206×2622
+screen — and stretching would make everything 1.7% too tall.
+
+The device frame is committed and so works anywhere. The logos are not: they are only
+looked for on a local copy, so on the hosted site drop them onto the slots instead.
 
 ## Logos
 
