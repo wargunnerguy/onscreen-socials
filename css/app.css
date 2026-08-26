@@ -194,7 +194,6 @@ input[type=range]{width:88px; accent-color:#3d8a64;}
   flex:0 0 auto; height:var(--brand-h); cursor:pointer; position:relative;
   display:flex; align-items:center;
 }
-.tt .brand{--brand-h:72px;}
 .brand img{height:100%; width:auto; display:block;}
 
 /* Empty slot: a visible target while editing, gone from the export. Wider than
@@ -209,6 +208,24 @@ input[type=range]{width:88px; accent-color:#3d8a64;}
   color:rgba(160,160,172,.95); font-size:24px; font-weight:600; letter-spacing:.12em;
 }
 .clean .brand:empty, .nologo .brand{display:none;}
+
+/* ── making a supplied logo readable on the bar it sits on ──
+   TikTok's and Instagram's bars are black and Facebook's is white, so a mark cut
+   for one is invisible on another — a black TikTok wordmark on a black bar most
+   of all. Two ways out, chosen with the Logo style control.
+
+   `brightness(0)` crushes any colour to black; adding `invert(1)` takes it to
+   white. Silhouettes the artwork, so it suits wordmarks and flat glyphs and not
+   Instagram's gradient — that is what the chip is for. */
+.logo-adapt .ig .brand img,
+.logo-adapt .tt .brand img{filter:brightness(0) invert(1);}
+.logo-adapt .fb .brand img{filter:brightness(0);}
+
+/* Keeps the original colours and gives them something to sit on instead. */
+.logo-chip .brand:not(:empty){
+  background:#fff; border-radius:14px; padding:8px 16px;
+  box-shadow:0 2px 10px rgba(0,0,0,.35);
+}
 
 /* The Facebook top bar is white, so the outline needs a darker ink there. */
 .fb .brand:empty{border-color:rgba(80,80,95,.6);}
@@ -417,7 +434,7 @@ input[type=range]{width:88px; accent-color:#3d8a64;}
 .tt .topbar{
   display:flex; align-items:center; justify-content:space-between;
   padding:2px 44px 10px; font-size:46px; font-weight:600;
-  position:relative; min-height:76px;
+  position:relative; min-height:88px;
 }
 /* Pinned to the centre of the bar rather than laid out between the other two
    items, so the handle stays centred however wide the logo turns out to be. */

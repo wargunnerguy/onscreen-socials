@@ -254,6 +254,12 @@ const on = (id, event, handler) => {
 
 on('fbDark', 'change', (el) => $('fbScreen').classList.toggle('dark', el.checked));
 
+/* A logo cut for a white background disappears on a black one. */
+on('logoStyle', 'change', (el) => {
+  body.classList.remove('logo-adapt', 'logo-chip');
+  if (el.value) body.classList.add(el.value);
+});
+
 on('fitSel', 'change', (el) => {
   body.classList.remove('fit-blur', 'fit-letter', 'fit-crop');
   body.classList.add(el.value);

@@ -152,6 +152,13 @@ each top bar has a slot you can drop your own logo file into. Those live in your
 apply to every account, and are deliberately **not** written into preset files — a preset
 gets emailed around and committed, and trademarked artwork should not travel with it.
 
+A mark cut for one background disappears on another — a black TikTok wordmark on TikTok'''s
+black bar most of all. **Logo style** under More ▾ handles that: *Adapt to bar* silhouettes
+the logo white on the dark bars and black on Facebook'''s white one, and *On a white chip*
+keeps the original colours and puts a white pad behind them, which is what a gradient mark
+like Instagram'''s needs. Both survive into the export. The tidiest answer is still to use
+the platform'''s own light-background variant where one exists.
+
 If you publish the result, the usual rules apply: use the marks to identify the real
 platform, do not restyle them, and do not imply the platform endorsed you.
 
