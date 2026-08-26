@@ -27,7 +27,6 @@ const DEMO = {
     label: 'Demo account',
     slug: 'demo',
     fields: {
-      time: '9:41',
 
       igHandle: 'yourhandle', igPosts: '210', igFollowers: '1527', igFollowing: '158',
       igName: 'Your Account Name', igCat: 'Category',
@@ -56,7 +55,6 @@ const DEMO = {
     label: 'Blank',
     slug: 'mockup',
     fields: {
-      time: '9:41',
 
       igHandle: 'username', igPosts: '0', igFollowers: '0', igFollowing: '0',
       igName: 'Account name', igCat: 'Category', igBio: 'Bio', igLink: 'link',

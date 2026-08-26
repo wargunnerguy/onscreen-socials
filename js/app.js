@@ -14,6 +14,11 @@ import { loadLogos, initLogos } from './logos.js';
 import { initReposition } from './cover.js';
 import { loadStyles, probe, renderPhone, download, platformCount } from './export.js';
 
+/* Bumped whenever these files change. boot() compares it against the copy on the
+ * server: a browser holding stale modules is otherwise indistinguishable from a
+ * bug, and has already cost several rounds of chasing behaviour that was fixed. */
+const BUILD = 15;
+
 const body = document.body;
 const stage = document.getElementById('stage');
 const $ = (id) => document.getElementById(id);
@@ -208,6 +213,35 @@ COLOURS.forEach(([hex, name], i) => {
   swatches.append(sw);
 });
 
+/* ───────────────────────── clock ─────────────────────────
+ * The time in the status bar belongs to the shot, not to the account — all three
+ * phones show it and every account wants the same one. So it lives here rather
+ * than in the presets, in its own key, and the status bars stay editable and
+ * write back to it. */
+const CLOCK_KEY = 'onscreen-socials-clock-v1';
+const clockInput = $('clock');
+
+function applyClock(value, from) {
+  for (const el of document.querySelectorAll('[data-clock]')) {
+    if (el !== from) el.textContent = value;
+  }
+  if (clockInput && clockInput !== from) clockInput.value = value;
+  try { localStorage.setItem(CLOCK_KEY, value); } catch { /* session only */ }
+}
+
+clockInput?.addEventListener('input', () => applyClock(clockInput.value, clockInput));
+
+// Typing straight into a status bar keeps the other two, and the setting, in step.
+for (const el of document.querySelectorAll('[data-clock]')) {
+  el.addEventListener('input', () => applyClock(el.textContent, el));
+}
+
+function loadClock() {
+  let value = '9:41';
+  try { value = localStorage.getItem(CLOCK_KEY) ?? value; } catch { /* ignore */ }
+  applyClock(value);
+}
+
 /* ───────────────────────── view toggles ───────────────────────── */
 
 /* Every control also has to be applied once at start-up, not only when it
@@ -389,6 +423,7 @@ async function boot() {
   show(current);
 
   syncControls();
+  loadClock();
   applyZoom();
 
   if (problems.length) {
@@ -408,6 +443,8 @@ async function boot() {
     return;
   }
 
+  checkForStaleBuild();
+
   if (!await probe()) {
     exportButtons.forEach((b) => { b.disabled = true; });
     showNotice(
@@ -421,6 +458,21 @@ async function boot() {
       'faithfully; other browsers can drop effects. Check the PNG before using it.'
     );
   }
+}
+
+/** Warn if the browser is running modules older than the ones being served. */
+async function checkForStaleBuild() {
+  try {
+    const source = await (await fetch('js/app.js', { cache: 'reload' })).text();
+    const served = Number(/const BUILD = (\d+)/.exec(source)?.[1]);
+    if (Number.isFinite(served) && served > BUILD) {
+      showNotice(
+        `<strong>You are running a cached older copy of this page.</strong> ` +
+        `Loaded build ${BUILD}, but build ${served} is on the server. ` +
+        `Reload with <strong>Ctrl+Shift+R</strong> to pick it up.`
+      );
+    }
+  } catch { /* offline or opened from disk; nothing useful to say */ }
 }
 
 boot();

@@ -71,6 +71,10 @@ body{
 .sw{width:22px; height:22px; border-radius:5px; border:1px solid var(--ui-input-line); cursor:pointer;}
 .sw.on{outline:2px solid #fff; outline-offset:2px;}
 input[type=range]{width:88px; accent-color:#3d8a64;}
+#bar input[type=text]{
+  background:var(--ui-input); color:#e6e6ec; border:1px solid var(--ui-input-line);
+  border-radius:5px; padding:3px 6px; font-size:12px; font-family:inherit; width:64px;
+}
 #saveState{color:#5fbf8a; font-size:11px; min-width:70px;}
 
 /* The less-used view toggles live in a popover so the bar holds one row. */

@@ -17,8 +17,6 @@
       "label": "Kohvik Null (café)",
       "slug": "kohvik-null",
       "fields": {
-        "time": "9:41",
-
         "igHandle": "kohviknull",
         "igPosts": "418",
         "igFollowers": "6,241",
@@ -66,8 +64,6 @@
       "label": "Hallid Aknad (band)",
       "slug": "hallid-aknad",
       "fields": {
-        "time": "21:15",
-
         "igHandle": "hallidaknad",
         "igPosts": "96",
         "igFollowers": "2,417",

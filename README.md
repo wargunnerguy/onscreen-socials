@@ -52,6 +52,8 @@ cost of the layout; a local server is a single command.
 - **TikTok: one wall image** under More ▾ swaps the nine-cell grid for a single drop
   area — screenshot the whole profile grid and drop it once, instead of sourcing nine
   thumbnails. It fills the width and runs off the bottom edge.
+- **Clock** under More ▾ sets the status-bar time on all three phones, for every
+  account. Typing into a status bar does the same thing.
 - **Reset** discards edits for the selected account; **Clear saved edits** under More ▾
   discards everything and forgets any preset opened with Load…
 - **`H`** hides the toolbar for a clean screen capture.
