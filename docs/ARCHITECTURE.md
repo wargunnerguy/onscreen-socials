@@ -45,6 +45,13 @@ set on `document.documentElement`. Before this was fixed, every export came out 
 stock 25% dim no matter where the slider was. `LIVE_VARS` in `export.js` is the list;
 anything new that the UI changes at runtime has to be added to it.
 
+**The typeface has to be set on the wrapper.** `css/app.css` declares `font-family` on
+`body`, and there is no body element inside a foreignObject — the clone goes into a bare
+div. That rule matched nothing, so every export came out in the SVG document's default
+font while Inter sat embedded and unused. `renderPhone` copies `font-family`, `font-size`
+and `line-height` from the live `body` onto the wrapper. Anything else the page sets on
+`body` or `html` and expects to inherit needs the same treatment.
+
 **Videos cannot cross the boundary.** Each is replaced by a canvas still of its current
 frame. Exports of video slots are one frozen frame, by nature.
 

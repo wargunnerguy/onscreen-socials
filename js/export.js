@@ -126,6 +126,16 @@ export async function renderPhone(idx, { slug, withFrame = true } = {}) {
     wrap.style.setProperty(name, root.getPropertyValue(name).trim());
   }
 
+  /* css/app.css declares the typeface on `body`, and there is no body element
+   * inside a foreignObject — the clone goes in a bare div. That rule therefore
+   * matched nothing and every export came out in the SVG document's default
+   * font, no matter that Inter was embedded and ready. Inheriting it from the
+   * live page is what makes the PNG match what is on screen. */
+  const page = getComputedStyle(document.body);
+  wrap.style.fontFamily = page.fontFamily;
+  wrap.style.fontSize = page.fontSize;
+  wrap.style.lineHeight = page.lineHeight;
+
   const style = document.createElement('style');
   style.textContent = cssText;
   wrap.append(style, clone);
