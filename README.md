@@ -149,6 +149,34 @@ every machine. Emoji are the exception — those come from the operating system'
 font, so a bio with 🐜 in it will not match between Windows and macOS. If you need
 byte-identical output across machines, avoid emoji in the editable text.
 
+## Files you supply: `assets/`
+
+Everything that is the same for everyone but cannot ship in the repository goes in
+`assets/`, by filename. Drop them in once and they are simply there on every reload.
+The folder is gitignored, so nothing here is published or committed.
+
+| File | What it is |
+|---|---|
+| `logo-instagram.png` `logo-facebook.png` `logo-tiktok.png` | the three top-bar logos |
+| `device-frame.png` | a photograph of the handset with the screen area transparent |
+| `device-mask.png` | white where the screen shows through, transparent elsewhere, same size as the frame |
+
+Logos from `assets/` are **defaults** — dropping one on a slot in the page overrides it for
+that browser.
+
+With a frame and mask present, an extra **real device** box appears next to Export. Ticked,
+the screen is rendered bare and composited into the frame: scaled into the aperture, clipped
+by the mask so the corners and the island come out exactly as the mask draws them, and the
+frame painted over the top. The PNG comes out at the frame's own size with everything
+outside the device transparent.
+
+Where the screen sits is read from the mask — the bounding box of its opaque pixels — so
+any device at any resolution works with no coordinates to enter. The two files only have to
+be the same pixel dimensions; if they are not, the page says so.
+
+`assets/` is only looked at when the site is served locally, since the folder is never
+published. On a deployed copy, drop logos onto the slots instead.
+
 ## Logos
 
 The tool ships **no platform logos**. Colour and layout carry the recognition, which keeps

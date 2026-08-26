@@ -106,6 +106,18 @@ attempt compared each slot against the picture they were sharing, which cannot t
 both look like a drop on a slot that is currently in step, and the test caught it spreading
 an intended override across all five.
 
+## Device frames
+
+`js/device.js` composites the rendered screen into a photographed handset. The aperture is
+derived from the mask's opaque bounding box rather than configured, so no coordinates are
+stored anywhere and any device works. Order is: draw the screen into the box, `destination-in`
+the mask so only screen survives, then the frame over the top. `renderPhone` renders the bare
+`.screen` in this mode — the CSS bezel would otherwise appear inside the photographed one.
+
+Everything user-supplied lives in `assets/` by filename and is only probed when `isLocal()`
+(`js/env.js`), for the same reason `presets/local.json` is: the folder is gitignored, so on a
+deployed site the requests would only hand every visitor a set of 404s.
+
 ## Presets
 
 Accounts are data, not code. `js/presets.js` merges four sources — an inline demo, the

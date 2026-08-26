@@ -17,6 +17,8 @@
  * to do nothing, which has already caused real confusion.
  */
 
+import { isLocal } from './env.js';
+
 const CACHE_KEY = 'onscreen-socials-presets-v1';
 
 /** Matches the markup defaults in index.html. Deliberately plain and English:
@@ -217,13 +219,6 @@ export async function loadAll() {
     problems.push('presets/index.json could not be read');
   }
 
-  // presets/local.json is gitignored, so it exists when someone is running their
-  // own copy and never on a deployed site. Only probe for it locally: the fetch
-  // failing is harmless, but the browser still logs a 404 to the console, and
-  // every visitor seeing one on a public site is untidy. On a deployment the
-  // Load… button is the way in, and it caches what it loads.
-  const local = ['localhost', '127.0.0.1', '[::1]', ''].includes(location.hostname);
-
   // A preset loaded by hand, remembered so it survives a reload on a deployed
   // site where the file itself was never published. It goes before the files:
   // its job is to supply accounts no file provides, and a file has to be able to
@@ -239,7 +234,8 @@ export async function loadAll() {
     }
   }
 
-  if (local) {
+  // Gitignored, so it exists locally and never on a deployment. See js/env.js.
+  if (isLocal()) {
     try {
       Object.assign(accounts, validate(await fetchJson('presets/local.json'), 'presets/local.json'));
     } catch { /* not present is the normal case */ }

@@ -16,6 +16,8 @@
  * dropped in once per browser.
  */
 
+import { isLocal } from './env.js';
+
 const KEY = 'onscreen-socials-logos-v1';
 const PLATFORMS = ['ig', 'fb', 'tt'];
 
@@ -58,7 +60,29 @@ function readAsDataUrl(file) {
   });
 }
 
-export function loadLogos() {
+/* Files anyone running their own copy can drop in once, so the three logos are
+ * simply there rather than being dragged in per browser. They are defaults: a
+ * logo dropped through the UI is a deliberate act and outranks them. */
+const FILES = {
+  ig: 'assets/logo-instagram.png',
+  fb: 'assets/logo-facebook.png',
+  tt: 'assets/logo-tiktok.png',
+};
+
+async function fetchAsDataUrl(url) {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(String(res.status));
+  const blob = await res.blob();
+  if (!blob.type.startsWith('image/')) throw new Error('not an image');
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = () => reject(r.error);
+    r.readAsDataURL(blob);
+  });
+}
+
+export async function loadLogos() {
   try {
     const raw = JSON.parse(localStorage.getItem(KEY) ?? '{}');
     for (const p of PLATFORMS) {
@@ -66,6 +90,25 @@ export function loadLogos() {
     }
   } catch { LOGOS = {}; }
   paint();
+
+  // Fill any platform the browser has nothing for from assets/. Missing files
+  // are the normal case — on a deployed site the folder is not published.
+  const missing = isLocal() ? PLATFORMS.filter((p) => !LOGOS[p]) : [];
+  if (!missing.length) return;
+
+  const found = await Promise.all(missing.map(async (p) => {
+    try { return [p, await fetchAsDataUrl(FILES[p])]; } catch { return null; }
+  }));
+
+  let any = false;
+  for (const hit of found) {
+    if (!hit) continue;
+    [LOGOS[hit[0]]] = [hit[1]];
+    any = true;
+  }
+  // Deliberately not saved: they come from the files each time, so replacing a
+  // file replaces the logo rather than being shadowed by a stale copy.
+  if (any) paint();
 }
 
 export function clearLogos() {

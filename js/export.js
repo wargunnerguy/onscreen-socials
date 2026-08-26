@@ -16,6 +16,8 @@
  * needs no keying.
  */
 
+import { hasDevice, composite } from './device.js';
+
 const NAMES = ['instagram', 'facebook', 'tiktok'];
 
 /* Custom properties the UI changes at runtime. css/app.css declares these on
@@ -98,11 +100,16 @@ function freezeVideos(clone, src) {
 }
 
 /** Render phone `idx` and return { blob, filename, width, height }. */
-export async function renderPhone(idx, { slug, withFrame = true } = {}) {
+export async function renderPhone(idx, { slug, withFrame = true, device = false } = {}) {
   if (cssText === null) throw new Error('loadStyles() has not finished');
 
   const phone = document.querySelectorAll('.phone')[idx];
-  const src = withFrame ? phone : phone.querySelector('.screen');
+  // A photographed frame supplies its own bezel, so the screen is rendered bare
+  // and dropped into the aperture afterwards.
+  const useDevice = device && hasDevice();
+  const src = useDevice ? phone.querySelector('.screen')
+            : withFrame ? phone
+            : phone.querySelector('.screen');
   const w = src.offsetWidth;
   const h = src.offsetHeight;
 
@@ -158,16 +165,18 @@ export async function renderPhone(idx, { slug, withFrame = true } = {}) {
   // after its @font-face data URIs have been applied.
   await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 
-  const canvas = document.createElement('canvas');
+  let canvas = document.createElement('canvas');
   canvas.width = w;
   canvas.height = h;
   canvas.getContext('2d').drawImage(img, 0, 0);
+
+  if (useDevice) canvas = composite(canvas);
 
   const blob = await new Promise((resolve, reject) => {
     canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('canvas produced no blob'))), 'image/png');
   });
 
-  return { blob, filename: `${slug}-${NAMES[idx]}.png`, width: w, height: h };
+  return { blob, filename: `${slug}-${NAMES[idx]}.png`, width: canvas.width, height: canvas.height };
 }
 
 export function download(blob, filename) {

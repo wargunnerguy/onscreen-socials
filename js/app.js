@@ -12,12 +12,13 @@ import { initMedia } from './media.js';
 import { applyLang, DEFAULT_LANG } from './strings.js';
 import { loadLogos, initLogos } from './logos.js';
 import { initReposition } from './cover.js';
+import { loadDevice, hasDevice, deviceSize } from './device.js';
 import { loadStyles, probe, renderPhone, download, platformCount } from './export.js';
 
 /* Bumped whenever these files change. boot() compares it against the copy on the
  * server: a browser holding stale modules is otherwise indistinguishable from a
  * bug, and has already cost several rounds of chasing behaviour that was fixed. */
-const BUILD = 15;
+const BUILD = 16;
 
 const body = document.body;
 const stage = document.getElementById('stage');
@@ -371,7 +372,11 @@ async function runExport(indices) {
   const slug = slugFor(current);
   try {
     for (const idx of indices) {
-      const { blob, filename } = await renderPhone(idx, { slug, withFrame: $('withFrame').checked });
+      const { blob, filename } = await renderPhone(idx, {
+        slug,
+        withFrame: $('withFrame').checked,
+        device: $('useDevice')?.checked,
+      });
       download(blob, filename);
       // Chrome throttles a burst of programmatic downloads; a beat between them
       // is the difference between three files and one.
@@ -413,7 +418,7 @@ initReposition({ onChange: () => { state.persist(current); flash('cover moved');
 async function boot() {
   expandIcons();
   await state.load();
-  loadLogos();
+  loadLogos();   // async; logos appear a moment after the rest
 
   const { accounts: found, problems } = await loadAll();
   accounts = found;
@@ -441,6 +446,17 @@ async function boot() {
     exportButtons.forEach((b) => { b.disabled = true; });
     showNotice(`<strong>Export is unavailable.</strong> Stylesheets could not be read (${err.message}).`);
     return;
+  }
+
+  // A photographed device frame, if the user has put one in assets/.
+  try {
+    const found = await loadDevice();
+    if (found) {
+      $('deviceLabel').hidden = false;
+      $('deviceLabel').title = `assets/device-frame.png — ${found}`;
+    }
+  } catch (err) {
+    showNotice(`<strong>Device frame not usable.</strong> ${err.message}`);
   }
 
   checkForStaleBuild();
