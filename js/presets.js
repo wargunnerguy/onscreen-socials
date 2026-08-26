@@ -5,11 +5,16 @@
  * dropdown. They live in presets/*.json rather than in this file so that adding
  * accounts does not mean editing code.
  *
- * Three sources, merged in this order (later wins on a key clash):
+ * Four sources, merged in this order — later wins on a key clash:
  *   1. DEMO below — inline, so the app still works if every fetch fails
- *   2. presets/*.json listed in presets/index.json
- *   3. presets/local.json — never committed; 404 is the normal case
- *   4. anything the user loaded by hand, cached in localStorage
+ *   2. whatever was last opened with Load…, cached in localStorage
+ *   3. presets/*.json listed in presets/index.json
+ *   4. presets/local.json — never committed; 404 is the normal case
+ *
+ * One rule decides that order: a file on disk always outranks the browser cache.
+ * The cache is there to supply accounts no file provides, which is what a
+ * deployed site needs. Putting it any later means editing a preset file appears
+ * to do nothing, which has already caused real confusion.
  */
 
 const CACHE_KEY = 'onscreen-socials-presets-v1';
@@ -210,6 +215,12 @@ export async function loadAll() {
   // Load… button is the way in, and it caches what it loads.
   const local = ['localhost', '127.0.0.1', '[::1]', ''].includes(location.hostname);
 
+  // A preset loaded by hand, remembered so it survives a reload on a deployed
+  // site where the file itself was never published. It goes before the files:
+  // its job is to supply accounts no file provides, and a file has to be able to
+  // outrank it or editing one appears to do nothing at all.
+  Object.assign(accounts, readCache());
+
   for (const file of listed) {
     const url = `presets/${file}`;
     try {
@@ -219,13 +230,6 @@ export async function loadAll() {
     }
   }
 
-  // A preset loaded by hand, remembered so it survives a reload on a deployed
-  // site where the file itself was never published.
-  Object.assign(accounts, readCache());
-
-  // presets/local.json goes last on purpose. If the file is sitting on disk it
-  // is the thing being edited, so it has to outrank a copy cached in the browser
-  // from some earlier Load… — otherwise edits to the file appear to do nothing.
   if (local) {
     try {
       Object.assign(accounts, validate(await fetchJson('presets/local.json'), 'presets/local.json'));

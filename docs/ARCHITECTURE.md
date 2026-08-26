@@ -100,10 +100,10 @@ preset that pointed at a remote image would turn opening it into a callback to w
 wrote it. Video is never written out — it is session-only everywhere else, and a few
 seconds of 1080p would dwarf the rest of the file.
 
-Load order matters and has bitten already. `presets/local.json` is applied **after** the
-localStorage preset cache: if that file is on disk it is the thing being edited, so it has
-to outrank a copy cached in the browser from an earlier Load… Otherwise edits to the file
-appear to do nothing at all.
+Load order matters and has bitten already. One rule settles it: **a file on disk always
+outranks the browser cache.** The cache exists to supply accounts that no file provides,
+which is what a deployed site needs; put it any later and editing a preset file appears to
+do nothing. Order is inline demo → cache → listed presets → `local.json`.
 
 The same trap exists one level down — saved per-account edits layer over the preset, so an
 edited field keeps winning after the preset file changes underneath it. That is correct
