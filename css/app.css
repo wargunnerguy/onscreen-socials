@@ -186,22 +186,27 @@ input[type=range]{width:88px; accent-color:#3d8a64;}
    the logo sits on the same optical line as the name beside it. */
 .lead{display:flex; align-items:center; gap:22px; min-width:0;}
 
+/* Sized in px rather than em: the slot inherited the screen's 42px body text,
+   which is small on a 1206px-wide phone and is not what the mark should be
+   scaled against anyway. */
 .brand{
-  flex:0 0 auto; height:1em; cursor:pointer; position:relative;
+  --brand-h:76px;
+  flex:0 0 auto; height:var(--brand-h); cursor:pointer; position:relative;
   display:flex; align-items:center;
 }
+.tt .brand{--brand-h:72px;}
 .brand img{height:100%; width:auto; display:block;}
 
 /* Empty slot: a visible target while editing, gone from the export. Wider than
    it is tall, because most platform marks are wordmarks — a square placeholder
    both hides easily at low zoom and misrepresents what will fit. */
 .brand:empty{
-  width:2.6em; border:3px dashed rgba(150,150,160,.7); border-radius:10px;
+  aspect-ratio:2.6; border:3px dashed rgba(160,160,172,.8); border-radius:12px;
 }
 .brand:empty::after{
   content:"LOGO"; position:absolute; inset:0;
   display:flex; align-items:center; justify-content:center;
-  color:rgba(150,150,160,.9); font-size:.3em; font-weight:600; letter-spacing:.12em;
+  color:rgba(160,160,172,.95); font-size:24px; font-weight:600; letter-spacing:.12em;
 }
 .clean .brand:empty, .nologo .brand{display:none;}
 
@@ -404,8 +409,18 @@ input[type=range]{width:88px; accent-color:#3d8a64;}
 /* ═════════════════════════ TIKTOK ═════════════════════════ */
 
 .tt{background:#000; color:#fff; font-size:42px; text-align:center;}
-.tt .topbar{display:flex; align-items:center; justify-content:space-between; padding:2px 44px 10px; font-size:46px; font-weight:600;}
-.tt .topbar .mid{display:flex; align-items:center; gap:12px; font-size:46px; font-weight:700;}
+.tt .topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding:2px 44px 10px; font-size:46px; font-weight:600;
+  position:relative; min-height:76px;
+}
+/* Pinned to the centre of the bar rather than laid out between the other two
+   items, so the handle stays centred however wide the logo turns out to be. */
+.tt .topbar .mid{
+  position:absolute; left:50%; transform:translateX(-50%);
+  display:flex; align-items:center; gap:12px; font-size:46px; font-weight:700;
+  max-width:52%;
+}
 .tt .avatar{
   width:224px; height:224px; border-radius:50%; margin:10px auto 0;
   background:linear-gradient(140deg,#4a4a55,#22222a); background-size:cover; background-position:center;

@@ -211,13 +211,27 @@ COLOURS.forEach(([hex, name], i) => {
 
 /* ───────────────────────── view toggles ───────────────────────── */
 
+/* Every control also has to be applied once at start-up, not only when it
+ * changes. Browsers restore form state across a reload, so a checkbox can come
+ * back ticked differently from the markup default while the view still reflects
+ * the markup — the toolbar and the phones then quietly disagree.
+ *
+ * These also tolerate a missing element: a stale cached index.html against fresh
+ * JS would otherwise throw here and take the whole module down, leaving a page
+ * that looks broken for a reason nothing explains. */
+const syncers = [];
+
 const toggleClass = (id, cls, invert = false, settle = false) => {
-  $(id).addEventListener('change', (e) => {
-    body.classList.toggle(cls, invert ? !e.target.checked : e.target.checked);
+  const el = $(id);
+  if (!el) return;
+  const apply = () => {
+    body.classList.toggle(cls, invert ? !el.checked : el.checked);
     // Frame, status bar and bleed all change how tall the stage is, so the
     // wrapper height has to be recomputed, not just the guide readouts.
     settle ? setTimeout(applyZoom, 30) : applyZoom();
-  });
+  };
+  el.addEventListener('change', apply);
+  syncers.push(apply);
 };
 
 toggleClass('frameChk', 'noframe', true);
@@ -229,20 +243,29 @@ toggleClass('ttWall', 'ttwall', false, true);
 toggleClass('markChk', 'watermark');
 toggleClass('logoChk', 'nologo', true);
 
-$('fbDark').addEventListener('change', (e) => {
-  $('fbScreen').classList.toggle('dark', e.target.checked);
-});
+const on = (id, event, handler) => {
+  const el = $(id);
+  if (!el) return;
+  el.addEventListener(event, () => handler(el));
+  syncers.push(() => handler(el));
+};
 
-$('fitSel').addEventListener('change', (e) => {
+on('fbDark', 'change', (el) => $('fbScreen').classList.toggle('dark', el.checked));
+
+on('fitSel', 'change', (el) => {
   body.classList.remove('fit-blur', 'fit-letter', 'fit-crop');
-  body.classList.add(e.target.value);
+  body.classList.add(el.value);
 });
 
-const dim = $('dim');
-dim.addEventListener('input', () => {
-  document.documentElement.style.setProperty('--dim', dim.value / 100);
-  $('dimVal').textContent = `${dim.value}%`;
+on('dim', 'input', (el) => {
+  document.documentElement.style.setProperty('--dim', el.value / 100);
+  $('dimVal').textContent = `${el.value}%`;
 });
+
+/** Bring the view into line with whatever the controls currently say. */
+function syncControls() {
+  for (const fn of syncers) fn();
+}
 
 const zoom = $('zoom');
 const stagewrap = $('stagewrap');
@@ -350,6 +373,7 @@ async function boot() {
   fillAccountList(current);
   show(current);
 
+  syncControls();
   applyZoom();
 
   if (problems.length) {
