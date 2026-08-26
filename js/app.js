@@ -7,6 +7,7 @@
 
 import { expandIcons } from './icons.js';
 import { loadAll, validate, cache, clearCache, buildDoc } from './presets.js';
+import * as userAccounts from './accounts.js';
 import * as state from './state.js';
 import { initMedia } from './media.js';
 import { applyLang, DEFAULT_LANG } from './strings.js';
@@ -18,7 +19,7 @@ import { loadStyles, probe, renderPhone, download, platformCount } from './expor
 /* Bumped whenever these files change. boot() compares it against the copy on the
  * server: a browser holding stale modules is otherwise indistinguishable from a
  * bug, and has already cost several rounds of chasing behaviour that was fixed. */
-const BUILD = 16;
+const BUILD = 17;
 
 const body = document.body;
 const stage = document.getElementById('stage');
@@ -85,6 +86,91 @@ $('resetBtn').addEventListener('click', () => {
   state.clearEdits(current);
   show(current);
   state.persist(current);
+});
+
+/* ── making and managing accounts in the page ──
+ * Without these, a second mockup means exporting the JSON, copying a block by
+ * hand and loading it back — fine for someone editing the repo, hopeless for
+ * anyone who has just opened the hosted site. */
+const acctPanel = document.querySelector('.more.acct');
+
+function askName(prompt, fallback) {
+  const label = window.prompt(prompt, fallback)?.trim();
+  return label || null;
+}
+
+function addAccount(label, fields, lang) {
+  const key = userAccounts.freeKey(userAccounts.slugify(label), accounts);
+  const account = { label, slug: userAccounts.slugify(label), fields: { ...fields } };
+  if (lang) account.lang = lang;
+
+  accounts[key] = account;
+  userAccounts.create(key, account);
+  return key;
+}
+
+$('newAcct').addEventListener('click', () => {
+  acctPanel.open = false;
+  const label = askName('Name for the new account', 'New account');
+  if (!label) return;
+  // Start from Blank rather than from nothing, so the fields read as a template
+  // instead of whichever account happened to be on screen.
+  const blank = accounts.blank?.fields ?? {};
+  const key = addAccount(label, blank);
+  fillAccountList(key);
+  switchTo(key);
+  flash(`created "${label}"`);
+});
+
+$('dupAcct').addEventListener('click', () => {
+  acctPanel.open = false;
+  const from = accounts[current];
+  const label = askName('Name for the copy', `${from.label} copy`);
+  if (!label) return;
+
+  // What is on screen, not what the preset said — edits and pictures included.
+  state.capture(current);
+  const key = addAccount(label, state.merged(current, from).fields, from.lang);
+  state.copyEdits(current, key);
+  fillAccountList(key);
+  switchTo(key);
+  state.persist(key);
+  flash(`copied to "${label}"`);
+});
+
+$('renameAcct').addEventListener('click', () => {
+  acctPanel.open = false;
+  const label = askName('New name for this account', accounts[current].label);
+  if (!label) return;
+
+  const slug = userAccounts.slugify(label);
+  // Renaming a preset account keeps its whole definition here from now on,
+  // otherwise the file would put the old name back on the next reload.
+  if (!userAccounts.isMine(current)) userAccounts.adopt(current, accounts[current]);
+  accounts[current] = { ...accounts[current], label, slug };
+  userAccounts.rename(current, label, slug);
+  fillAccountList(current);
+  flash(`renamed to "${label}"`);
+});
+
+$('delAcct').addEventListener('click', () => {
+  acctPanel.open = false;
+  const gone = accounts[current];
+  if (Object.keys(accounts).length < 2) { flash('cannot delete the last account'); return; }
+  if (!confirm(`Delete "${gone.label}"?
+
+Its edits and pictures go with it.`)) return;
+
+  userAccounts.remove(current);
+  state.clearEdits(current);
+  delete accounts[current];
+
+  const next = Object.keys(accounts)[0];
+  fillAccountList(next);
+  current = null;                 // nothing to save back into the deleted account
+  switchTo(next);
+  state.persist(next);
+  flash(`deleted "${gone.label}"`);
 });
 
 /* Load a preset by hand. Also caches it, so a preset that is not deployed

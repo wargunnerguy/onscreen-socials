@@ -44,6 +44,16 @@ export function onSaveStatus(fn) { onStatus = fn; }
 export function hasEdits(key) { return Object.hasOwn(STATE, key); }
 export function clearEdits(key) { delete STATE[key]; }
 
+/** Copy one account's edits and media onto another, for Duplicate. */
+export function copyEdits(from, to) {
+  const src = STATE[from];
+  if (!src) return;
+  STATE[to] = {
+    fields: { ...src.fields },
+    media: Object.fromEntries(Object.entries(src.media).map(([k, v]) => [k, { ...v }])),
+  };
+}
+
 /** Drop every saved edit. The preset files themselves are untouched. */
 export function clearAll() {
   STATE = {};

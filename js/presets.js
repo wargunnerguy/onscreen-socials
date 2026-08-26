@@ -10,6 +10,7 @@
  *   2. whatever was last opened with Load…, cached in localStorage
  *   3. presets/*.json listed in presets/index.json
  *   4. presets/local.json — never committed; 404 is the normal case
+ *   5. accounts created or renamed in the page (js/accounts.js)
  *
  * One rule decides that order: a file on disk always outranks the browser cache.
  * The cache is there to supply accounts no file provides, which is what a
@@ -18,6 +19,7 @@
  */
 
 import { isLocal } from './env.js';
+import * as mine from './accounts.js';
 
 const CACHE_KEY = 'onscreen-socials-presets-v1';
 
@@ -240,6 +242,11 @@ export async function loadAll() {
       Object.assign(accounts, validate(await fetchJson('presets/local.json'), 'presets/local.json'));
     } catch { /* not present is the normal case */ }
   }
+
+  // Accounts created or renamed in the page itself go last: the most deliberate
+  // thing the user did outranks every file. See js/accounts.js.
+  mine.load();
+  mine.apply(accounts);
 
   return { accounts, problems };
 }

@@ -95,7 +95,8 @@ input[type=range]{width:88px; accent-color:#3d8a64;}
 .more .panel hr{border:0; border-top:1px solid var(--ui-line); margin:1px 0; width:100%;}
 /* Save… opens on the left edge; it sits at the start of the bar, where a
    right-aligned panel would hang off screen. */
-.more.save .panel{right:auto; left:0;}
+.more.save .panel,
+.more.acct .panel{right:auto; left:0;}
 .more .panel .note{margin:0; color:#8a8a96; font-size:11px; line-height:1.5;}
 .more .panel .note.warn{color:#e0a860;}
 .more .panel button{width:100%;}

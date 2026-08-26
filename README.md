@@ -80,6 +80,21 @@ what your pipeline wants.
 **Slot guides** print each video slot's true position and size inside the 1206 × 2622
 screen, which is what you need to line footage up in an editor.
 
+## Making a mockup
+
+1. Open the site. Pick **Blank**, or **Manage ▾ → New account…** and name it.
+2. Click any text to change it — name, handle, counts, bio, post text.
+3. Drop a picture on an avatar; it fills all five avatar slots at once. Drop a cover on
+   Facebook, footage on a video slot, a grid screenshot on TikTok.
+4. **Export** → three PNGs.
+
+For a second organisation, **Manage ▾ → Duplicate this one…** copies everything on screen,
+pictures included, so you change the name and the numbers rather than starting over.
+Rename and Delete are in the same menu.
+
+Accounts you make live in your browser. **Save…** writes them to a `.json` you can keep,
+version, or send to someone — they press **Load…** and have your whole set.
+
 ## Accounts
 
 Accounts live in `presets/*.json`, not in the code:
